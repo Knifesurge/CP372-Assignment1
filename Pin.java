@@ -10,6 +10,18 @@ public class Pin {
     private int y;
     private List<Note> pinnedNotes;
 
+    /**
+     * Create a new Pin at coordinates (x, y).
+     * @param x - X-coord of this Pin
+     * @param y - Y-coord of this Pin
+     * @param notes - Notes that this Pin pins to the Board
+     */
+    public Pin(int x, int y, List<Note> notes) {
+        this.x = x;
+        this.y = y;
+        this.pinnedNotes = notes;
+    }
+
     public int getX() {
         return x;
     }

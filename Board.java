@@ -37,11 +37,17 @@ public class Board {
     /**
      * Adds a Note to the Board's List of Notes if the Note falls within
      * the Boards bounds.
-     * @param note - Note to add to Board
+     * @param x - X-coord of Note
+     * @param y - Y-coord of Note
+     * @param width - Width of Note
+     * @param height - Height of Note
+     * @param color - Color of Note
+     * @param message - Message of Note
      * @return true if Note added, false otherwise
      */
-    public boolean addNote(Note note) {
-        if (checkBounds(note.getX(), note.getY(), note.getWidth(), note.getHeight())) {
+    public synchronized boolean addNote(int x, int y, int width, int height, String color, String message) {
+        if (checkBounds(x, y, width, height)) {
+            Note note = new Note(x, y, width, height, color, message);
             notes.add(note);
             return true;
         }
@@ -51,12 +57,34 @@ public class Board {
     /**
      * Adds a Pin to the Board if the Pin falls within the Boards bounds.
      * Any Notes this Pin intersects has its status updated to <i>pinned</i>.
-     * @param x - X coord of Pin
-     * @param y - Y coord of Pin
+     * @param x - X-coord of Pin
+     * @param y - Y-coord of Pin
      * @return true if Pin added, false otherwise
      */
-    public boolean pin(int x, int y) {
+    public synchronized boolean pin(int x, int y) {
         if (checkBounds(x, y, 0, 0)) {
+            // Pin coords fall within Board bounds
+            // Check if Pin already in this position
+            for (Pin p : pins) {
+                if (p.getX() == x && p.getY() == y) {
+                    // Don't add Pin if position already taken
+                    return false;
+                }
+            }
+            // Check if Pin falls on any Notes, keep reference of these Notes
+            ArrayList<Note> pinnedNotes = new ArrayList<Note>();
+            for (Note n : notes) {
+                if (checkBounds(x, y, 0, 0, n.getX(), n.getY(), n.getWidth(), n.getHeight())) {
+                    // Pin within bounds of this Note, add to list
+                    pinnedNotes.add(n);
+                    // Pin the Note
+                    n.updatePinned(true);
+                }
+            }
+
+            // Create a new Pin, add to list of Pins
+            Pin pin = new Pin(x, y, pinnedNotes);
+            pins.add(pin);
             return true;
         }
         return false;
@@ -72,9 +100,13 @@ public class Board {
      * @param y - Y coord of Pin
      * @return true if Pin removed, false otherwise
      */
-    public boolean unpin(int x, int y) {
+    public synchronized boolean unpin(int x, int y) {
         if (checkBounds(x, y, 0, 0)) {
-            return true;
+            // Pin within the Board
+            // Get the Pin at these coordinates
+
+            // Check if Pin on any Notes, update Pin's list of Notes
+
         }
         return false;
     }
@@ -88,32 +120,87 @@ public class Board {
 
     /**
      * Removes any <i>unpinned</i> Notes from the Board.
+     *
+     * @return true if any Notes were remove, false otherwise
      */
-    public void shake() {
+    public synchronized boolean shake() {
+        boolean removed = false;
         Iterator<Note> i = notes.iterator();
         while (i.hasNext()) {
             Note n = i.next();
             if (!n.isPinned()) {
                 i.remove();
+                removed = true;
             }
         }
+        return removed;
     }
 
     /**
      * Removes all Notes and Pins from the Board.
      */
-    public void clear() {
+    public synchronized void clear() {
         notes.clear();
         pins.clear();
     }
 
     /**
-     * Checks whether the given coordinates and dimensions fit on the Board.
-     * @param x - X coord
-     * @param y - Y coord
-     * @param w - Width
-     * @param h - Height
-     * @return true if within bounds, false otherwise
+     * Checks whether first set of coordinates and dimensions fall within
+     * the second set of coordinates and dimensions.
+     *
+     * This is an alternate way of calling checkBounds and providing each value
+     * as an argument.
+     *
+     * @param bounds - Array of the bounds and dimensions to compare,
+     *               formatted as [x1,y1,w1,h1,x2,y2,w2,h2] where x,y
+     *               are integer coordinates and w,h are integer dimensions
+     *               (width, height)
+     * @return true if first set of bounds in the second, false otherwise
+     */
+    private boolean checkBounds(int... bounds) {
+
+        return checkBounds(bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5], bounds[6], bounds[7]);
+    }
+
+    /**
+     * Checks whether the first set of coordinates and dimensions fall within
+     * the second set of coordinates and dimensions.
+     *
+     * This is used to check if Notes and Pins fall within the Board, and if a
+     * Pin falls within the bounds of a Note.
+     * @param x1 - X-coord of first object
+     * @param y1 - Y-coord of first object
+     * @param w1 - Width of first object
+     * @param h1 - Height of first object
+     * @param x2 - X-coord of second object
+     * @param y2 - Y-coord of second object
+     * @param w2 - Width of second object
+     * @param h2 - Height of second object
+     * @return true if first object within second object (totally or
+     * partially), false otherwise.
+     */
+    private boolean checkBounds(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) {
+        return x1 >= 0
+                && y1 >= 0
+                && w1 >= 0
+                && h1 >= 0
+                && x2 >= 0
+                && y2 >= 0
+                && w2 >= 0
+                && h2 >= 0
+                && (x1 + w1) < w2
+                && (y1 + h1) < h2;
+    }
+
+    /**
+     * Checks whether supplied coordinates and dimensions are within
+     * this Board
+     *
+     * @param x - X-coord of object
+     * @param y - Y-coord of object
+     * @param w - Width of object
+     * @param h - Height of object
+     * @return true if object within the Board, false otherwise
      */
     private boolean checkBounds(int x, int y, int w, int h) {
         return x >= 0
