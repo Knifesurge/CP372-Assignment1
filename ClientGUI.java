@@ -162,7 +162,7 @@ public class ClientGUI extends javax.swing.JFrame {
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
         // Get the IP and the Port from their labels
         String IPAddress = IPTextField.getText();
-        String portNumber = portTextField.getText();
+        int portNumber = Integer.parseInt(portTextField.getText());
         
         // Attempt a connection
         connect(IPAddress, portNumber);
@@ -176,22 +176,16 @@ public class ClientGUI extends javax.swing.JFrame {
             
             // Set the placeholder text to include the argument format for the 
             // selected item
-            String placeholderText = commandTips.get(item);
-            if (!placeholderText.isEmpty()) {
-                clientMessageTextField.setText(placeholderText);
-            } else {
-                // CLEAR, SHAKE, DISCONNECT do not take args
-                clientMessageTextField.setText("");
-            }
-            
-            // Some commands take no requirements, so make the messageField uneditable
-            if (item.equals("CLEAR") || item.equals("SHAKE") || item.equals("DISCONNECT")) {
-                clientMessageTextField.setEditable(false);
-                clientMessageTextField.setBackground(Color.DARK_GRAY);
-            } else {
+            if (commandTips.containsKey(item)) {
+                clientMessageTextField.setText(commandTips.get(item));
                 clientMessageTextField.setEditable(true);
                 clientMessageTextField.setBackground(Color.WHITE);
-
+            } else {
+                // CLEAR, SHAKE, DISCONNECT do not take args, so make 
+                // the messageField uneditable
+                clientMessageTextField.setText("");
+                clientMessageTextField.setEditable(false);
+                clientMessageTextField.setBackground(Color.DARK_GRAY);
             }
         }
     }//GEN-LAST:event_commandSelectionItemStateChanged
