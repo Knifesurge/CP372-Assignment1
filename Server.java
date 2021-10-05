@@ -1,4 +1,7 @@
 import java.util.Scanner;
+import java.io.IOException;
+
+import java.net.ServerSocket;
 
 /**
  * Command-line Application.
@@ -7,9 +10,17 @@ import java.util.Scanner;
  */
 public class Server {
 
-    public static void main(String[] args) {
+    
+    public static void main(String argv[]) {
         Scanner in = new Scanner(System.in);
-
+        Integer port = Integer.valueOf(argv[0]);
+    
+        try {
+            ServerSocket socket = new ServerSocket(port);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         Board board = new Board(1000, 1000, "white", "red", "blue", "green");
 
         String request = "";
@@ -31,4 +42,6 @@ public class Server {
             }
         }
     }
+
+    
 }
