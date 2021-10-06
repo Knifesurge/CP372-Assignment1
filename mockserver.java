@@ -14,24 +14,64 @@ public class mockserver {
          
         try {
              n_socket = new ServerSocket(4444);
-             csocket = n_socket.accept();
-             
+      
         } catch (Exception e) {
             //TODO: handle exception
         }
-        PrintWriter out = new PrintWriter(csocket.getOutputStream(),true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(csocket.getInputStream()));
-        String inputLine,outputLine;
-        outputLine = "Server here";
-        out.println(outputLine);
-        while ((inputLine = in.readLine())!= null){
-            out.println(outputLine + " Repeat");
-
+        while (true){
+            Socket connection = n_socket.accept();
+            ClientHandler request = new ClientHandler(connection);
+            Thread thread = new Thread(request);
+            thread.start();
         }
-        out.close();
-        in.close();
-        csocket.close();
-        n_socket.close();
+       
 
     }
+}
+class ClientHandler implements Runnable{
+    private final Socket clientSocket;
+    public ClientHandler(Socket socket){
+        this.clientSocket = socket;
+    }
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        PrintWriter out = null;
+        try {
+            out = new PrintWriter(clientSocket.getOutputStream(),true);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        BufferedReader in=null;
+        try {
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String inputLine,outputLine;
+        System.out.println("Connection successfull");
+        try {
+            int i = 0;
+            while ((inputLine = in.readLine())!= null){
+                outputLine = inputLine;
+                out.println(outputLine + " Repeat " + i);
+                i++;
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        out.close();
+        try {
+            in.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        
+    }
+    
 }

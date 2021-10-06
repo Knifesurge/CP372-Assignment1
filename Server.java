@@ -15,12 +15,15 @@ public class Server {
         Scanner in = new Scanner(System.in);
         Integer port = Integer.valueOf(argv[0]);
     
+        while (true){
         try {
             ServerSocket socket = new ServerSocket(port);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        Client = new Client(connection)
+    }
         Board board = new Board(1000, 1000, "white", "red", "blue", "green");
 
         String request = "";
