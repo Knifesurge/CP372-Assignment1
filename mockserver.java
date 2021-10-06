@@ -20,7 +20,11 @@ public class mockserver {
         }
         while (true){
             Socket connection = n_socket.accept();
+            System.out.println("New client connected"
+                                   + connection.getInetAddress()
+                                         .getHostAddress());
             ClientHandler request = new ClientHandler(connection);
+            
             Thread thread = new Thread(request);
             thread.start();
         }
