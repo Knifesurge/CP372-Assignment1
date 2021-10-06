@@ -33,8 +33,10 @@ public class Client implements Runnable {
         String UserCommand;
         //UserCommand = stdIn.readLine();
         while ((UserCommand = stdIn.readLine())!=null){
+            //if(UserCommand.equals("DISCONNECT")) break;
             output.println(UserCommand);
             System.out.println(input.readLine());
+           
         }
         output.close();
         input.close();
