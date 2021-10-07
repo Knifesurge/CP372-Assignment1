@@ -18,10 +18,13 @@ public class Board {
         this.colors = Arrays.asList(colors);
     }
     public String inputParser(String[] args){
-        if (args == null){
-            return 'Welcome';
-        }
+        if (args == null) return "Welcome";
+
+        if (args[0].equals("DISCONNECT")) return args[0];
+
+    
     }
+
     public int getWidth() {
         return width;
     }
