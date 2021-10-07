@@ -17,7 +17,11 @@ public class Board {
         this.height = height;
         this.colors = Arrays.asList(colors);
     }
-
+    public String inputParser(String[] args){
+        if (args == null){
+            return 'Welcome';
+        }
+    }
     public int getWidth() {
         return width;
     }

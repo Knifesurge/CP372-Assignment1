@@ -27,6 +27,7 @@ public class Server {
 
             thread.start();
         }
+       // socket.close();
       /*
         Scanner in = new Scanner(System.in);
         Integer port = Integer.valueOf(argv[0]);
@@ -82,6 +83,16 @@ public class Server {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+            String Inline, Outline;
+            Outline = int_board.InputParser(null);
+            out.println(Outline);
+            while ((Inline = in.readLine())!= null){
+                Outline = int_board.InputParser(null);
+                out.println(Outline);
+                if (Outline.equals("DISCONNECT")) break;
+            }
+            out.close();
+            in.close();
             
 
             
