@@ -84,10 +84,10 @@ public class Server {
                 e.printStackTrace();
             }
             String Inline, Outline;
-            Outline = int_board.InputParser(null);
+            Outline = int_board.inputParser(null);
             out.println(Outline);
             while ((Inline = in.readLine())!= null){
-                Outline = int_board.InputParser(null);
+                Outline = int_board.inputParser(null);
                 out.println(Outline);
                 if (Outline.equals("DISCONNECT")) break;
             }

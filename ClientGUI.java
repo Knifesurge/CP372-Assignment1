@@ -5,7 +5,11 @@
 package BulletinBoardGUI;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  *
@@ -14,22 +18,22 @@ import java.util.HashMap;
 public class ClientGUI extends javax.swing.JFrame {
 
     private HashMap<String, String> commandTips;
-    
-    private void connect(String IPAddress, int port) {
-        // TODO: Complete connect function
-    }
-    
+    private Socket socket;
+    private LinkedList<String> messageBuffer;
     
     /**
      * Creates new form ClientGUI
      */
     public ClientGUI() {
         initComponents();
+        // Load Map with command and respective placeholder text
         commandTips = new HashMap<String, String>();
         commandTips.put("GET", "PINS or color=color contains=x y refersTo=string");
         commandTips.put("POST", "x y width height color message");
         commandTips.put("PIN", "x y");
         commandTips.put("UNPIN", "x y");
+        // Create empty buffer to hold messages
+        messageBuffer = new LinkedList<String>();
     }
 
     /**
@@ -49,16 +53,27 @@ public class ClientGUI extends javax.swing.JFrame {
         errorMessageLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         clientTerminal = new javax.swing.JTextArea();
-        clientMessageTextField = new javax.swing.JTextField();
         sendMessageButton = new javax.swing.JButton();
         commandSelection = new javax.swing.JComboBox<>();
         argumentDescriptorLabel = new javax.swing.JLabel();
+        argOption1TextField = new javax.swing.JTextField();
+        argOption1Label = new javax.swing.JLabel();
+        argOption2Label = new javax.swing.JLabel();
+        xTextField = new javax.swing.JTextField();
+        yTextField = new javax.swing.JTextField();
+        pinsToggle = new javax.swing.JToggleButton();
+        argOption3Label = new javax.swing.JLabel();
+        referstoTextField = new javax.swing.JTextField();
+        wTextField = new javax.swing.JTextField();
+        hTextField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Bulletin Board");
 
+        IPLabel.setLabelFor(IPTextField);
         IPLabel.setText("IP Address");
 
+        portLabel.setLabelFor(portTextField);
         portLabel.setText("Port");
 
         connectButton.setText("Connect");
@@ -77,17 +92,12 @@ public class ClientGUI extends javax.swing.JFrame {
         jScrollPane1.setViewportView(clientTerminal);
         clientTerminal.getAccessibleContext().setAccessibleName("Client Terminal");
 
-        clientMessageTextField.setText("PINS or color=color contains=x y refersTo=string");
-        clientMessageTextField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                clientMessageTextFieldFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                clientMessageTextFieldFocusLost(evt);
+        sendMessageButton.setText("Send");
+        sendMessageButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sendMessageButtonActionPerformed(evt);
             }
         });
-
-        sendMessageButton.setText("Send");
 
         commandSelection.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "GET", "POST", "PIN", "UNPIN", "SHAKE", "CLEAR", "DISCONNECT" }));
         commandSelection.addItemListener(new java.awt.event.ItemListener() {
@@ -95,6 +105,28 @@ public class ClientGUI extends javax.swing.JFrame {
                 commandSelectionItemStateChanged(evt);
             }
         });
+
+        argOption1TextField.setText("color");
+
+        argOption1Label.setLabelFor(argOption1Label);
+        argOption1Label.setText("Color");
+
+        argOption2Label.setText("Contains");
+
+        xTextField.setText("x");
+
+        yTextField.setText("y");
+
+        pinsToggle.setText("Get All Pins");
+
+        argOption3Label.setLabelFor(argOption3Label);
+        argOption3Label.setText("Refers To");
+
+        referstoTextField.setText("refers to");
+
+        wTextField.setText("w");
+
+        hTextField.setText("h");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -124,11 +156,31 @@ public class ClientGUI extends javax.swing.JFrame {
                                 .addComponent(commandSelection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(argumentDescriptorLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(clientMessageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(argOption1Label)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(argOption1TextField, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(pinsToggle))
+                                    .addComponent(argumentDescriptorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(sendMessageButton)))))
-                .addContainerGap(46, Short.MAX_VALUE))
+                                .addComponent(sendMessageButton))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(argOption2Label)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(xTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(yTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(wTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(4, 4, 4)
+                                    .addComponent(hTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(argOption3Label)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(referstoTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addContainerGap(82, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -146,12 +198,25 @@ public class ClientGUI extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(clientMessageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(sendMessageButton)
-                    .addComponent(commandSelection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(commandSelection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(argOption1TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(argOption1Label)
+                    .addComponent(pinsToggle))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(argOption2Label)
+                    .addComponent(xTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(yTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(wTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(hTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
                 .addComponent(argumentDescriptorLabel)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(argOption3Label)
+                    .addComponent(referstoTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(17, 17, 17))
         );
 
         errorMessageLabel.getAccessibleContext().setAccessibleName("Error Message Label");
@@ -174,6 +239,24 @@ public class ClientGUI extends javax.swing.JFrame {
             String item = (String) evt.getItem();
             //System.out.println("Selected Item: " + item);
             
+            // Reset the GUI components required
+            if (item.equals("GET")) {
+                argOption1Label.setVisible(true);
+                argOption1Label.setText("Color");
+                argOption2Label.setVisible(true);
+                argOption2Label.setText("Contains");
+                argOption3Label.setVisible(true);
+                argOption3Label.setText("Refers To");
+                pinsToggle.setVisible(true);
+            } else if (item.equals("POST")) {
+                argOption2Label.setText("Coords");
+                argOption3Label.setText("Message");
+            } else if (item.equals("PIN") || item.equals("UNPIN")) {
+                
+            } else {
+            
+            }
+            /*
             // Set the placeholder text to include the argument format for the 
             // selected item
             if (commandTips.containsKey(item)) {
@@ -187,31 +270,86 @@ public class ClientGUI extends javax.swing.JFrame {
                 clientMessageTextField.setEditable(false);
                 clientMessageTextField.setBackground(Color.DARK_GRAY);
             }
+            */
         }
     }//GEN-LAST:event_commandSelectionItemStateChanged
 
-    private void clientMessageTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_clientMessageTextFieldFocusGained
-        // Check to see if some of the placeholder text is still here
-        String text = clientMessageTextField.getText();
-        if (commandTips.containsValue(text)) {
-            // Placeholder text present, clear the text for User-defined text
-            clientMessageTextField.setText("");
-            clientMessageTextField.setCaretPosition(0);
+    private void sendMessageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendMessageButtonActionPerformed
+        if (evt.getActionCommand().equals("Send")) {
+            String command = (String) commandSelection.getSelectedItem();
+            String message = "";
+            
+            if (command.equals("GET")) {
+                String color = argOption1TextField.getText().equals("color") ? "" : argOption1TextField.getText();
+                int x = 
+                        xTextField.getText().equals("x") || xTextField.getText().isBlank() 
+                        ? -1 
+                        : Integer.parseInt(xTextField.getText());
+                int y = yTextField.getText().equals("y") || yTextField.getText().isBlank() 
+                        ? -1 
+                        : Integer.parseInt(yTextField.getText());
+                String content = referstoTextField.getText();
+            } else if (command.equals("POST")) {
+                String color = argOption1TextField.getText().equals("color") ? "" : argOption1TextField.getText();
+                int x = 
+                        xTextField.getText().equals("x") || xTextField.getText().isBlank() 
+                        ? -1 
+                        : Integer.parseInt(xTextField.getText());
+                int y = yTextField.getText().equals("y") || yTextField.getText().isBlank() 
+                        ? -1 
+                        : Integer.parseInt(yTextField.getText());
+                int w = wTextField.getText().equals("y") || wTextField.getText().isBlank() 
+                        ? -1 
+                        : Integer.parseInt(wTextField.getText());
+                int h = hTextField.getText().equals("y") || hTextField.getText().isBlank() 
+                        ? -1 
+                        : Integer.parseInt(hTextField.getText());
+                String content = referstoTextField.getText();
+            } else if (command.equals("PIN") || command.equals("UNPIN")) {
+                
+            }
+            
+            String color = argOption1TextField.getText().equals("color") ? "" : argOption1TextField.getText();
+            int x = 
+                    xTextField.getText().equals("x") || xTextField.getText().isBlank() 
+                    ? -1 
+                    : Integer.parseInt(xTextField.getText());
+            int y = yTextField.getText().equals("y") || yTextField.getText().isBlank() 
+                    ? -1 
+                    : Integer.parseInt(yTextField.getText());
+            int w = wTextField.getText().equals("y") || wTextField.getText().isBlank() 
+                    ? -1 
+                    : Integer.parseInt(wTextField.getText());
+            int h = hTextField.getText().equals("y") || hTextField.getText().isBlank() 
+                    ? -1 
+                    : Integer.parseInt(hTextField.getText());
+            String content = referstoTextField.getText();
+            
+            
         }
-    }//GEN-LAST:event_clientMessageTextFieldFocusGained
+    }//GEN-LAST:event_sendMessageButtonActionPerformed
 
-    private void clientMessageTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_clientMessageTextFieldFocusLost
-        // Check to see if we can put the placeholder text back
-        String text = clientMessageTextField.getText();
-        String currentCommand = (String) commandSelection.getSelectedItem();
-        String placeholderText = commandTips.get(currentCommand);
-        if (text.isEmpty()) {
-            // No User-defined text present, good to reset
-            clientMessageTextField.setCaretPosition(0);
-            clientMessageTextField.setText(placeholderText);
+    private void connect(String IPAddress, int port) {
+        try {
+            socket = new Socket(IPAddress, port);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }//GEN-LAST:event_clientMessageTextFieldFocusLost
-
+    }
+    
+    public void receiveMessage(String message) {
+        messageBuffer.add(message);
+        clientTerminal.append(message+"\n");
+    }
+    
+    private void sendMessage(String command, String args) {
+        // Send message to server
+        String message = command + " " + args;
+        // TODO: Actually send the message to the server
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -250,15 +388,24 @@ public class ClientGUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel IPLabel;
     private javax.swing.JTextField IPTextField;
+    private javax.swing.JLabel argOption1Label;
+    private javax.swing.JTextField argOption1TextField;
+    private javax.swing.JLabel argOption2Label;
+    private javax.swing.JLabel argOption3Label;
     private javax.swing.JLabel argumentDescriptorLabel;
-    private javax.swing.JTextField clientMessageTextField;
     private javax.swing.JTextArea clientTerminal;
     private javax.swing.JComboBox<String> commandSelection;
     private javax.swing.JButton connectButton;
     private javax.swing.JLabel errorMessageLabel;
+    private javax.swing.JTextField hTextField;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JToggleButton pinsToggle;
     private javax.swing.JLabel portLabel;
     private javax.swing.JTextField portTextField;
+    private javax.swing.JTextField referstoTextField;
     private javax.swing.JButton sendMessageButton;
+    private javax.swing.JTextField wTextField;
+    private javax.swing.JTextField xTextField;
+    private javax.swing.JTextField yTextField;
     // End of variables declaration//GEN-END:variables
 }
