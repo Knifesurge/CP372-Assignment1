@@ -41,10 +41,6 @@ public class Client implements Runnable {
         output.close();
         input.close();
         Client_Socket.close();
-
-
-
-
     }
 
     @Override

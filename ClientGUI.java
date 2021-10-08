@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -17,21 +18,14 @@ import java.util.LinkedList;
  */
 public class ClientGUI extends javax.swing.JFrame {
 
-    private HashMap<String, String> commandTips;
-    private Socket socket;
     private LinkedList<String> messageBuffer;
+    private Socket socket;
     
     /**
      * Creates new form ClientGUI
      */
     public ClientGUI() {
         initComponents();
-        // Load Map with command and respective placeholder text
-        commandTips = new HashMap<String, String>();
-        commandTips.put("GET", "PINS or color=color contains=x y refersTo=string");
-        commandTips.put("POST", "x y width height color message");
-        commandTips.put("PIN", "x y");
-        commandTips.put("UNPIN", "x y");
         // Create empty buffer to hold messages
         messageBuffer = new LinkedList<String>();
     }
@@ -107,6 +101,14 @@ public class ClientGUI extends javax.swing.JFrame {
         });
 
         argOption1TextField.setText("color");
+        argOption1TextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                argOption1TextFieldFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                argOption1TextFieldFocusLost(evt);
+            }
+        });
 
         argOption1Label.setLabelFor(argOption1Label);
         argOption1Label.setText("Color");
@@ -114,8 +116,24 @@ public class ClientGUI extends javax.swing.JFrame {
         argOption2Label.setText("Contains");
 
         xTextField.setText("x");
+        xTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                xTextFieldFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                xTextFieldFocusLost(evt);
+            }
+        });
 
         yTextField.setText("y");
+        yTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                yTextFieldFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                yTextFieldFocusLost(evt);
+            }
+        });
 
         pinsToggle.setText("Get All Pins");
 
@@ -123,10 +141,34 @@ public class ClientGUI extends javax.swing.JFrame {
         argOption3Label.setText("Refers To");
 
         referstoTextField.setText("refers to");
+        referstoTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                referstoTextFieldFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                referstoTextFieldFocusLost(evt);
+            }
+        });
 
         wTextField.setText("w");
+        wTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                wTextFieldFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                wTextFieldFocusLost(evt);
+            }
+        });
 
         hTextField.setText("h");
+        hTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                hTextFieldFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                hTextFieldFocusLost(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -241,20 +283,96 @@ public class ClientGUI extends javax.swing.JFrame {
             
             // Reset the GUI components required
             if (item.equals("GET")) {
+                // TODO: Change background of TextFields
+                
                 argOption1Label.setVisible(true);
                 argOption1Label.setText("Color");
+                argOption1TextField.setEditable(true);
+                argOption1TextField.setBackground(Color.WHITE);
+                argOption1TextField.setText("color");
                 argOption2Label.setVisible(true);
                 argOption2Label.setText("Contains");
+                xTextField.setEditable(true);
+                xTextField.setBackground(Color.WHITE);
+                xTextField.setText("x");
+                yTextField.setEditable(true);
+                yTextField.setBackground(Color.WHITE);
+                yTextField.setText("y");
+                wTextField.setEditable(true);
+                wTextField.setBackground(Color.WHITE);
+                wTextField.setText("w");
+                hTextField.setEditable(true);
+                hTextField.setBackground(Color.WHITE);
+                hTextField.setText("h");
+                referstoTextField.setEditable(true);
+                referstoTextField.setBackground(Color.WHITE);
+                referstoTextField.setText("refers to");
                 argOption3Label.setVisible(true);
                 argOption3Label.setText("Refers To");
                 pinsToggle.setVisible(true);
             } else if (item.equals("POST")) {
+                pinsToggle.setVisible(false);
+                argOption1TextField.setEditable(true);
+                argOption1TextField.setBackground(Color.WHITE);
+                argOption1TextField.setText("color");
+                xTextField.setEditable(true);
+                xTextField.setBackground(Color.WHITE);
+                xTextField.setText("x");
+                yTextField.setEditable(true);
+                yTextField.setBackground(Color.WHITE);
+                yTextField.setText("y");
+                wTextField.setEditable(true);
+                wTextField.setBackground(Color.WHITE);
+                wTextField.setText("w");
+                hTextField.setEditable(true);
+                hTextField.setBackground(Color.WHITE);
+                hTextField.setText("h");
                 argOption2Label.setText("Coords");
                 argOption3Label.setText("Message");
+                referstoTextField.setEditable(true);
+                referstoTextField.setBackground(Color.WHITE);
+                referstoTextField.setText("message");
             } else if (item.equals("PIN") || item.equals("UNPIN")) {
-                
+                xTextField.setEditable(true);
+                xTextField.setBackground(Color.WHITE);
+                xTextField.setText("x");
+                yTextField.setEditable(true);
+                yTextField.setBackground(Color.WHITE);
+                yTextField.setText("y");
+                argOption1TextField.setEditable(false);
+                argOption1TextField.setBackground(Color.GRAY);
+                argOption1TextField.setText("");
+                wTextField.setEditable(false);
+                wTextField.setBackground(Color.GRAY);
+                wTextField.setText("");
+                hTextField.setEditable(false);
+                hTextField.setBackground(Color.GRAY);
+                hTextField.setText("");
+                referstoTextField.setEditable(false);
+                referstoTextField.setBackground(Color.GRAY);
+                referstoTextField.setText("");
+                pinsToggle.setVisible(false);
             } else {
-            
+                // SHAKE, CLEAR, DISCONNECT
+                argOption1TextField.setEditable(false);
+                argOption1TextField.setBackground(Color.GRAY);
+                argOption1TextField.setText("");
+                xTextField.setEditable(false);
+                xTextField.setBackground(Color.GRAY);
+                xTextField.setText("");
+                yTextField.setEditable(false);
+                yTextField.setBackground(Color.GRAY);
+                yTextField.setText("");
+                wTextField.setEditable(false);
+                wTextField.setBackground(Color.GRAY);
+                wTextField.setText("");
+                hTextField.setEditable(false);
+                hTextField.setBackground(Color.GRAY);
+                hTextField.setText("");
+                referstoTextField.setEditable(false);
+                referstoTextField.setBackground(Color.GRAY);
+                referstoTextField.setText("");
+                pinsToggle.setVisible(false);
             }
             /*
             // Set the placeholder text to include the argument format for the 
@@ -277,37 +395,7 @@ public class ClientGUI extends javax.swing.JFrame {
     private void sendMessageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendMessageButtonActionPerformed
         if (evt.getActionCommand().equals("Send")) {
             String command = (String) commandSelection.getSelectedItem();
-            String message = "";
-            
-            if (command.equals("GET")) {
-                String color = argOption1TextField.getText().equals("color") ? "" : argOption1TextField.getText();
-                int x = 
-                        xTextField.getText().equals("x") || xTextField.getText().isBlank() 
-                        ? -1 
-                        : Integer.parseInt(xTextField.getText());
-                int y = yTextField.getText().equals("y") || yTextField.getText().isBlank() 
-                        ? -1 
-                        : Integer.parseInt(yTextField.getText());
-                String content = referstoTextField.getText();
-            } else if (command.equals("POST")) {
-                String color = argOption1TextField.getText().equals("color") ? "" : argOption1TextField.getText();
-                int x = 
-                        xTextField.getText().equals("x") || xTextField.getText().isBlank() 
-                        ? -1 
-                        : Integer.parseInt(xTextField.getText());
-                int y = yTextField.getText().equals("y") || yTextField.getText().isBlank() 
-                        ? -1 
-                        : Integer.parseInt(yTextField.getText());
-                int w = wTextField.getText().equals("y") || wTextField.getText().isBlank() 
-                        ? -1 
-                        : Integer.parseInt(wTextField.getText());
-                int h = hTextField.getText().equals("y") || hTextField.getText().isBlank() 
-                        ? -1 
-                        : Integer.parseInt(hTextField.getText());
-                String content = referstoTextField.getText();
-            } else if (command.equals("PIN") || command.equals("UNPIN")) {
-                
-            }
+            String[] message = new String[7];
             
             String color = argOption1TextField.getText().equals("color") ? "" : argOption1TextField.getText();
             int x = 
@@ -325,9 +413,142 @@ public class ClientGUI extends javax.swing.JFrame {
                     : Integer.parseInt(hTextField.getText());
             String content = referstoTextField.getText();
             
+            message[0] = command;
+            message[1] = String.valueOf(x);
+            message[2] = String.valueOf(y);
+            message[3] = String.valueOf(w);
+            message[4] = String.valueOf(h);
+            message[5] = color;
+            message[6] = content;
             
         }
     }//GEN-LAST:event_sendMessageButtonActionPerformed
+
+    private void argOption1TextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_argOption1TextFieldFocusGained
+        // Check to see if some of the placeholder text is still here
+        String text = argOption1TextField.getText();
+        if (text.equalsIgnoreCase("color")) {
+            // Placeholder text present, clear the text for User-defined text
+            argOption1TextField.setText("");
+            argOption1TextField.setCaretPosition(0);
+        }
+    }//GEN-LAST:event_argOption1TextFieldFocusGained
+
+    private void argOption1TextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_argOption1TextFieldFocusLost
+        // Check to see if we can put the placeholder text back
+        String text = argOption1TextField.getText();
+        String placeholderText = "color";
+        if (text.isEmpty()) {
+            // No User-defined text present, good to reset
+            argOption1TextField.setCaretPosition(0);
+            argOption1TextField.setText(placeholderText);
+        }
+    }//GEN-LAST:event_argOption1TextFieldFocusLost
+
+    private void xTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_xTextFieldFocusGained
+        // Check to see if some of the placeholder text is still here
+        String text = xTextField.getText();
+        if (text.equalsIgnoreCase("x")) {
+            // Placeholder text present, clear the text for User-defined text
+            xTextField.setText("");
+            xTextField.setCaretPosition(0);
+        }
+    }//GEN-LAST:event_xTextFieldFocusGained
+
+    private void xTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_xTextFieldFocusLost
+        // Check to see if we can put the placeholder text back
+        String text = xTextField.getText();
+        String placeholderText = "x";
+        if (text.isEmpty()) {
+            // No User-defined text present, good to reset
+            xTextField.setCaretPosition(0);
+            xTextField.setText(placeholderText);
+        }
+    }//GEN-LAST:event_xTextFieldFocusLost
+
+    private void yTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_yTextFieldFocusLost
+        // Check to see if we can put the placeholder text back
+        String text = yTextField.getText();
+        String placeholderText = "y";
+        if (text.isEmpty()) {
+            // No User-defined text present, good to reset
+            yTextField.setCaretPosition(0);
+            yTextField.setText(placeholderText);
+        }
+    }//GEN-LAST:event_yTextFieldFocusLost
+
+    private void yTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_yTextFieldFocusGained
+        // Check to see if some of the placeholder text is still here
+        String text = yTextField.getText();
+        if (text.equalsIgnoreCase("y")) {
+            // Placeholder text present, clear the text for User-defined text
+            yTextField.setText("");
+            yTextField.setCaretPosition(0);
+        }
+    }//GEN-LAST:event_yTextFieldFocusGained
+
+    private void wTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_wTextFieldFocusGained
+        // Check to see if some of the placeholder text is still here
+        String text = wTextField.getText();
+        if (text.equalsIgnoreCase("w")) {
+            // Placeholder text present, clear the text for User-defined text
+            wTextField.setText("");
+            wTextField.setCaretPosition(0);
+        }
+    }//GEN-LAST:event_wTextFieldFocusGained
+
+    private void wTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_wTextFieldFocusLost
+        // Check to see if we can put the placeholder text back
+        String text = wTextField.getText();
+        String placeholderText = "w";
+        if (text.isEmpty()) {
+            // No User-defined text present, good to reset
+            wTextField.setCaretPosition(0);
+            wTextField.setText(placeholderText);
+        }
+    }//GEN-LAST:event_wTextFieldFocusLost
+
+    private void hTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_hTextFieldFocusGained
+        // Check to see if some of the placeholder text is still here
+        String text = hTextField.getText();
+        if (text.equalsIgnoreCase("h")) {
+            // Placeholder text present, clear the text for User-defined text
+            hTextField.setText("");
+            hTextField.setCaretPosition(0);
+        }
+    }//GEN-LAST:event_hTextFieldFocusGained
+
+    private void hTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_hTextFieldFocusLost
+        // Check to see if we can put the placeholder text back
+        String text = hTextField.getText();
+        String placeholderText = "h";
+        if (text.isEmpty()) {
+            // No User-defined text present, good to reset
+            hTextField.setCaretPosition(0);
+            hTextField.setText(placeholderText);
+        }
+    }//GEN-LAST:event_hTextFieldFocusLost
+
+    private void referstoTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_referstoTextFieldFocusGained
+        // Check to see if some of the placeholder text is still here
+        String text = referstoTextField.getText();
+        if (text.equalsIgnoreCase("refers to")) {
+            // Placeholder text present, clear the text for User-defined text
+            referstoTextField.setText("");
+            referstoTextField.setCaretPosition(0);
+        }
+    }//GEN-LAST:event_referstoTextFieldFocusGained
+
+    private void referstoTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_referstoTextFieldFocusLost
+        // Check to see if we can put the placeholder text back
+        String text = referstoTextField.getText();
+        String placeholderText = "refers to";
+        if (text.isEmpty()) {
+            // No User-defined text present, good to reset
+            referstoTextField.setCaretPosition(0);
+            referstoTextField.setText(placeholderText);
+        }
+    }//GEN-LAST:event_referstoTextFieldFocusLost
 
     private void connect(String IPAddress, int port) {
         try {
@@ -342,12 +563,6 @@ public class ClientGUI extends javax.swing.JFrame {
     public void receiveMessage(String message) {
         messageBuffer.add(message);
         clientTerminal.append(message+"\n");
-    }
-    
-    private void sendMessage(String command, String args) {
-        // Send message to server
-        String message = command + " " + args;
-        // TODO: Actually send the message to the server
     }
     
     /**

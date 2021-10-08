@@ -22,7 +22,7 @@ public class Board {
 
         if (args[0].equals("DISCONNECT")) return args[0];
 
-    
+        return "Error";
     }
 
     public int getWidth() {
