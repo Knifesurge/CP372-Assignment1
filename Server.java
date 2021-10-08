@@ -13,7 +13,6 @@ import java.net.Socket;
  */
 public class Server {
 
-    
     public static void main(String argv[]) throws IOException {
         int Port_number = Integer.parseInt(argv[0]);
         ServerSocket socket = new ServerSocket(Port_number);
@@ -27,40 +26,6 @@ public class Server {
 
             thread.start();
         }
-       // socket.close();
-      /*
-        Scanner in = new Scanner(System.in);
-        Integer port = Integer.valueOf(argv[0]);
-    
-        while (true){
-        try {
-            ServerSocket socket = new ServerSocket(port);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        Client = new Client(connection)
-    }
-        Board board = new Board(1000, 1000, "white", "red", "blue", "green");
-
-        String request = "";
-        String cmd = "";
-
-        while (!cmd.equals("DISCONNECT")) {
-            System.out.print(">> ");
-            request = in.nextLine();
-            cmd = request.split(" ")[0];
-
-            switch(cmd) {
-                case "GET":
-                    break;
-                case "POST":
-
-                default:
-                    System.err.println("Undefined Command!");
-                    break;
-            }
-        }*/
     }
     private static class BoardRunner implements Runnable{
         private Socket Int_socket = null;
@@ -103,9 +68,7 @@ public class Server {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            
 
-            
         }
         public BoardRunner(Board board, Socket socket){
             this.Int_socket = socket;
