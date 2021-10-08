@@ -86,13 +86,23 @@ public class Server {
             String Inline, Outline;
             Outline = int_board.inputParser(null);
             out.println(Outline);
-            while ((Inline = in.readLine())!= null){
-                Outline = int_board.inputParser(null);
-                out.println(Outline);
-                if (Outline.equals("DISCONNECT")) break;
+            try {
+                while ((Inline = in.readLine())!= null){
+                    Outline = int_board.inputParser(null);
+                    out.println(Outline);
+                    if (Outline.equals("DISCONNECT")) break;
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
             out.close();
-            in.close();
+            try {
+                in.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             
 
             
