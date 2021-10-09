@@ -18,11 +18,13 @@ public class Board {
         this.height = height;
         this.colors = Arrays.asList(colors);
     }
+
+    
     public String inputParser(String args){
         if (args == null) return "Welcome";
 
         String outMsg = "ERROR";
-        String[] aArgs = args.split("|");
+        String[] aArgs = args.split(" ");
         String command = aArgs[0];
         int x = Integer.parseInt(aArgs[1]);
         int y = Integer.parseInt(aArgs[2]);
@@ -36,11 +38,36 @@ public class Board {
 
         if (command.equals("DISCONNECT")) {
             return command;
+        } else if (command.equals("GET")) {
+            ArrayList<Note> notes = filterNotes(color, new String(x+" "+y), message.toString());
+            outMsg = "";
+            for (Note n : notes) {
+                outMsg += n.toString();
+            }
+        } else if (command.equals("POST")) {
+            outMsg = "";
+            boolean added = addNote(x, y, w, h, color, message.toString());
+            if (added) outMsg += "Note added.";
+            else outMsg += "Note not added. Please try again.";
+        } else if (command.equals("PIN")) {
+            outMsg = "";
+            boolean pinned = pin(x, y);
+            if (pinned) outMsg += "Pin added.";
+            else outMsg += "Pin not added. Please try again.";
+        } else if (command.equals("UNPIN")) {
+            outMsg = "";
+            boolean unpinned = unpin(x, y);
+            if (unpinned) outMsg += "Pin removed.";
+            else outMsg += "Pin not removed. Please try again.";
+        } else if (command.equals("SHAKE")) {
+            outMsg = "";
+            boolean shaked = shake();
+            if (shaked) outMsg += "Board shaken.";
+            else outMsg += "Something happened while shaking the Board. Please try again.";
+        } else if (command.equals("CLEAR")) {
+            clear();
+            outMsg = "Board cleared.";
         }
-        if (command.equals("GET")) {
-            ArrayList<Note> notes = filterNotes()
-        }
-
         return outMsg;
     }
 
@@ -107,7 +134,6 @@ public class Board {
                     n.updatePinned(true);
                 }
             }
-
             // Create a new Pin, add to list of Pins
             Pin pin = new Pin(x, y, pinnedNotes);
             pins.add(pin);
@@ -151,8 +177,8 @@ public class Board {
         return false;
     }
 
-    public synchronized List<Note> filterNotes(String color, String contains, String refersTo) {
-        List<Note> fnotes = new ArrayList<Note>();
+    public synchronized ArrayList<Note> filterNotes(String color, String contains, String refersTo) {
+        ArrayList<Note> fnotes = new ArrayList<Note>();
         // Get the coords out of the string
         String[] containsTmp = color.split(" ");
         int x = Integer.parseInt(containsTmp[0]);

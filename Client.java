@@ -53,7 +53,7 @@ public class Client extends SwingWorker {
         } else {
             // Send the arguments off as well
             for (String s : message) {
-                outMsg.append(s + "|");
+                outMsg.append(s + " ");
             }
         }
         System.out.println("Sending message: " + outMsg.toString());
