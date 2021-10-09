@@ -26,8 +26,8 @@ public class Board {
         if (args == null) return "Welcome";
 
         String outMsg = "ERROR";
-        String[] aArgs = args.split(" ");
-        aArgs = Arrays.stream(aArgs)
+        String[] splitArgs = args.split(" ");
+        String[] aArgs = Arrays.stream(splitArgs)
                 .filter(s -> (s != null))
                 .toArray(String[]::new);
         String command = aArgs[0];
