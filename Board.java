@@ -9,14 +9,16 @@ public class Board {
 
     private int width;
     private int height;
-    private List<String> colors;
-    private List<Note> notes;
-    private List<Pin> pins;
+    private ArrayList<String> colors;
+    private ArrayList<Note> notes;
+    private ArrayList<Pin> pins;
 
     public Board(int width, int height, String... colors) {
         this.width = width;
         this.height = height;
-        this.colors = Arrays.asList(colors);
+        this.colors = new ArrayList(Arrays.asList(colors));
+        this.notes = new ArrayList<Note>();
+        this.pins = new ArrayList<Pin>();
     }
 
 
