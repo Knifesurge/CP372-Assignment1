@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Holds Board meta-information (e.g., Board width, height, available colors),
@@ -20,11 +21,27 @@ public class Board {
     public String inputParser(String args){
         if (args == null) return "Welcome";
 
-        String[] aArgs = args.split(" ");
+        String outMsg = "ERROR";
+        String[] aArgs = args.split("|");
+        String command = aArgs[0];
+        int x = Integer.parseInt(aArgs[1]);
+        int y = Integer.parseInt(aArgs[2]);
+        int w = Integer.parseInt(aArgs[3]);
+        int h = Integer.parseInt(aArgs[4]);
+        String color = aArgs[5];
+        StringBuilder message = new StringBuilder();
+        for (String s : Arrays.copyOfRange(aArgs, 6, aArgs.length)) {
+            message.append(s+" ");
+        }
 
-        if (aArgs[0].equals("DISCONNECT")) return aArgs[0];
+        if (command.equals("DISCONNECT")) {
+            return command;
+        }
+        if (command.equals("GET")) {
+            ArrayList<Note> notes = filterNotes()
+        }
 
-        return "Error";
+        return outMsg;
     }
 
     public int getWidth() {
@@ -113,18 +130,94 @@ public class Board {
         if (checkBounds(x, y, 0, 0)) {
             // Pin within the Board
             // Get the Pin at these coordinates
-
+            Pin chosenPin = new Pin(-1, -1, null);
+            for (Pin pin : pins) {
+                if (pin.getX() == x && pin.getY() == y) {
+                    chosenPin = pin;
+                    break;
+                }
+            }
+            // Check if chosenPin valid
+            if (chosenPin.getX() == -1 && chosenPin.getY() == -1)
+                return false;
             // Check if Pin on any Notes, update Pin's list of Notes
-
+            if (!chosenPin.getPinnedNotes().isEmpty()) {
+                for (Note n : chosenPin.getPinnedNotes()) {
+                    n.updatePinned(false);
+                }
+            }
+            return true;
         }
         return false;
     }
 
-    public List<Note> filterNotes(String filters) {
-        StringTokenizer tokens = new StringTokenizer(filters);
-        System.out.println(tokens);
+    public synchronized List<Note> filterNotes(String color, String contains, String refersTo) {
+        List<Note> fnotes = new ArrayList<Note>();
+        // Get the coords out of the string
+        String[] containsTmp = color.split(" ");
+        int x = Integer.parseInt(containsTmp[0]);
+        int y = Integer.parseInt(containsTmp[1]);
+        // Only filter on filters that are present
+        boolean fColor = color.isEmpty() ? false : true;
+        boolean fContains = contains.isEmpty() ? false : true;
+        boolean fRefersTo = refersTo.isEmpty() ? false : true;
 
-        return new ArrayList<Note>();
+        // Checks which filters are present and filters the notes accordingly.
+        // The filtered Notes are then added to the fnotes List above, to be returned to the caller.
+        // Any suggestions on how to do this without this big branch would be welcomed :)
+        if (fColor) {
+            if (fContains) {
+                if (fRefersTo) {
+                    fnotes.addAll(
+                            notes.stream()
+                                    .filter(n -> n.getColor().equals(color) &&
+                                            checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
+                                                    x, y, 0, 0) &&
+                                            n.getMessage().contains(refersTo)
+                                    ).collect(Collectors.toList())
+                    );
+                }
+            } else if (fRefersTo) {
+                fnotes.addAll(
+                        notes.stream()
+                                .filter(n -> n.getColor().equals(color) &&
+                                        n.getMessage().contains(refersTo)
+                                ).collect(Collectors.toList())
+                );
+            } else {
+                fnotes.addAll(
+                        notes.stream()
+                                .filter(n -> n.getColor().equals(color)
+                                ).collect(Collectors.toList())
+                );
+            }
+        } else if (fContains) {
+            if (fRefersTo) {
+                fnotes.addAll(
+                        notes.stream()
+                                .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
+                                        x, y, 0, 0) &&
+                                        n.getMessage().contains(refersTo)
+                                ).collect(Collectors.toList())
+                );
+            } else {
+                fnotes.addAll(
+                        notes.stream()
+                                .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
+                                        x, y, 0, 0)
+                                ).collect(Collectors.toList())
+                );
+            }
+        } else if (fRefersTo) {
+            fnotes.addAll(
+                    notes.stream()
+                            .filter(n -> n.getMessage().contains(refersTo)
+                            ).collect(Collectors.toList())
+            );
+        } else {
+            fnotes.addAll(notes);
+        }
+        return fnotes;
     }
 
     /**
