@@ -39,27 +39,38 @@ public class Board {
         if (command.equals("DISCONNECT")) {
             return command;
         } else if (command.equals("GET")) {
-            String color = aArgs.length >= 2 ? aArgs[1].substring("color=".length()) : "";
-            String[] contains = new String[]{"-1","-1"};
-            if (aArgs.length >= 3 && aArgs[2].contains("contains=")) {
-                contains = aArgs[2].substring("contains=".length()).split(" ");
-            }
-            int x = Integer.parseInt(contains[0]);
-            int y = Integer.parseInt(contains[1]);
-            String refersTo = "";
-            if (aArgs.length >= 4 && aArgs[3].contains("refersTo="))
-                refersTo = aArgs[3].substring("refersTo=".length());
-            System.out.println("refersTo="+refersTo);
-            ArrayList<Note> notes;
-            if (x == -1 || y == -1)
-                notes = filterNotes(color, "", refersTo);
-            else
-                notes = filterNotes(color, new String(x+" "+y), refersTo);
-            outMsg = "";
-            for (Note n : notes) {
-                System.out.println("Adding note.." + n.toString());
-                outMsg += n.toString();
-                outMsg += "\n";
+            // Check if we are just getting all of the pins
+            if (aArgs[1].equals("PINS")) {
+                outMsg = "";
+                ArrayList<Pin> pins = new ArrayList<Pin>(getPins());
+                for (Pin p : pins) {
+                    outMsg += p.toString();
+                    outMsg += "\n";
+                }
+            } else {
+                // Getting some notes, process the filters/arguments
+                String color = aArgs.length >= 2 ? aArgs[1].substring("color=".length()) : "";
+                String[] contains = new String[]{"-1", "-1"};
+                if (aArgs.length >= 3 && aArgs[2].contains("contains=")) {
+                    contains = aArgs[2].substring("contains=".length()).split(" ");
+                }
+                int x = Integer.parseInt(contains[0]);
+                int y = Integer.parseInt(contains[1]);
+                String refersTo = "";
+                if (aArgs.length >= 4 && aArgs[3].contains("refersTo="))
+                    refersTo = aArgs[3].substring("refersTo=".length());
+                System.out.println("refersTo=" + refersTo);
+                ArrayList<Note> notes;
+                if (x == -1 || y == -1)
+                    notes = filterNotes(color, "", refersTo);
+                else
+                    notes = filterNotes(color, new String(x + " " + y), refersTo);
+                outMsg = "";
+                for (Note n : notes) {
+                    System.out.println("Adding note.." + n.toString());
+                    outMsg += n.toString();
+                    outMsg += "\n";
+                }
             }
         } else if (command.equals("POST")) {
             int x = Integer.parseInt(aArgs[1]);
@@ -123,6 +134,10 @@ public class Board {
 
     public List<Note> getNotes() {
         return notes;
+    }
+
+    public List<Pin> getPins() {
+        return pins;
     }
 
     /**
