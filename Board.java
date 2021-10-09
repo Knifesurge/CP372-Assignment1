@@ -50,7 +50,11 @@ public class Board {
             int x = Integer.parseInt(contains[0]);
             int y = Integer.parseInt(contains[1]);
             String refersTo = aArgs.length >= 4 ? aArgs[3].substring("refersTo=".length()) : "";
-            ArrayList<Note> notes = filterNotes(color, new String(x+" "+y), refersTo);
+            ArrayList<Note> notes;
+            if (x == -1 || y == -1)
+                notes = filterNotes(color, "", refersTo);
+            else
+                notes = filterNotes(color, new String(x+" "+y), refersTo);
             outMsg = "";
             for (Note n : notes) {
                 System.out.println("Adding note.." + n.toString());
