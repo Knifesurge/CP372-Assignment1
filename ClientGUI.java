@@ -12,7 +12,6 @@ import java.util.LinkedList;
  */
 public class ClientGUI extends javax.swing.JFrame {
 
-    private LinkedList<String> messageBuffer;
     private static Client client;
     
     /**
@@ -20,8 +19,16 @@ public class ClientGUI extends javax.swing.JFrame {
      */
     public ClientGUI() {
         initComponents();
-        // Create empty buffer to hold messages
-        messageBuffer = new LinkedList<String>();
+        // Create client object to handle connections
+        client = new Client(clientTerminal);
+
+        // Initial Command GET, block out some unused textfields
+        wTextField.setBackground(Color.GRAY);
+        wTextField.setEditable(false);
+        wTextField.setText("");
+        hTextField.setBackground(Color.GRAY);
+        hTextField.setEditable(false);
+        hTextField.setText("");
     }
 
     /**
@@ -264,9 +271,13 @@ public class ClientGUI extends javax.swing.JFrame {
         // Get the IP and the Port from their labels
         String IPAddress = IPTextField.getText();
         int portNumber = Integer.parseInt(portTextField.getText());
-        
+
+        System.out.println("Attempting connection to " + IPAddress + ":" + portNumber);
+
         // Attempt a connection
         client.connect(IPAddress, portNumber);
+        // Start the SwingWorker client to handle the client connection
+        client.execute();
     }//GEN-LAST:event_connectButtonActionPerformed
 
     private void commandSelectionItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_commandSelectionItemStateChanged
@@ -277,8 +288,6 @@ public class ClientGUI extends javax.swing.JFrame {
             
             // Reset the GUI components required
             if (item.equals("GET")) {
-                // TODO: Change background of TextFields
-                
                 argOption1Label.setVisible(true);
                 argOption1Label.setText("Color");
                 argOption1TextField.setEditable(true);
@@ -292,12 +301,12 @@ public class ClientGUI extends javax.swing.JFrame {
                 yTextField.setEditable(true);
                 yTextField.setBackground(Color.WHITE);
                 yTextField.setText("y");
-                wTextField.setEditable(true);
-                wTextField.setBackground(Color.WHITE);
-                wTextField.setText("w");
-                hTextField.setEditable(true);
-                hTextField.setBackground(Color.WHITE);
-                hTextField.setText("h");
+                wTextField.setEditable(false);
+                wTextField.setBackground(Color.GRAY);
+                wTextField.setText("");
+                hTextField.setEditable(false);
+                hTextField.setBackground(Color.GRAY);
+                hTextField.setText("");
                 referstoTextField.setEditable(true);
                 referstoTextField.setBackground(Color.WHITE);
                 referstoTextField.setText("refers to");
@@ -368,21 +377,6 @@ public class ClientGUI extends javax.swing.JFrame {
                 referstoTextField.setText("");
                 pinsToggle.setVisible(false);
             }
-            /*
-            // Set the placeholder text to include the argument format for the 
-            // selected item
-            if (commandTips.containsKey(item)) {
-                clientMessageTextField.setText(commandTips.get(item));
-                clientMessageTextField.setEditable(true);
-                clientMessageTextField.setBackground(Color.WHITE);
-            } else {
-                // CLEAR, SHAKE, DISCONNECT do not take args, so make 
-                // the messageField uneditable
-                clientMessageTextField.setText("");
-                clientMessageTextField.setEditable(false);
-                clientMessageTextField.setBackground(Color.DARK_GRAY);
-            }
-            */
         }
     }//GEN-LAST:event_commandSelectionItemStateChanged
 
@@ -399,13 +393,18 @@ public class ClientGUI extends javax.swing.JFrame {
             int y = yTextField.getText().equals("y") || yTextField.getText().isBlank() 
                     ? -1 
                     : Integer.parseInt(yTextField.getText());
-            int w = wTextField.getText().equals("y") || wTextField.getText().isBlank() 
+            int w = wTextField.getText().equals("w") || wTextField.getText().isBlank()
                     ? -1 
                     : Integer.parseInt(wTextField.getText());
-            int h = hTextField.getText().equals("y") || hTextField.getText().isBlank() 
+            int h = hTextField.getText().equals("h") || hTextField.getText().isBlank()
                     ? -1 
                     : Integer.parseInt(hTextField.getText());
-            String content = referstoTextField.getText();
+            String content = referstoTextField.getText().equals("refers to") ||
+                    referstoTextField.getText().equals("message")
+                    ?
+                        ""
+                    :
+                        referstoTextField.getText();
             
             message[0] = command;
             message[1] = String.valueOf(x);
@@ -414,7 +413,16 @@ public class ClientGUI extends javax.swing.JFrame {
             message[4] = String.valueOf(h);
             message[5] = color;
             message[6] = content;
-            
+
+            boolean argsRequired = command.equalsIgnoreCase("shake") ||
+                    command.equalsIgnoreCase("clear") ||
+                    command.equalsIgnoreCase("disconnect")
+                    ?
+                    false
+                    :
+                    true;
+
+            client.sendMessage(message, argsRequired);
         }
     }//GEN-LAST:event_sendMessageButtonActionPerformed
 
@@ -544,11 +552,6 @@ public class ClientGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_referstoTextFieldFocusLost
 
-    public void receiveMessage(String message) {
-        messageBuffer.add(message);
-        clientTerminal.append(message+"\n");
-    }
-    
     /**
      * @param args the command line arguments
      */
@@ -582,10 +585,7 @@ public class ClientGUI extends javax.swing.JFrame {
                 new ClientGUI().setVisible(true);
             }
         });
-
         /* Create the Client object to handle connections */
-        client = new Client();
-        java.awt.EventQueue.invokeLater(client);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
