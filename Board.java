@@ -68,11 +68,15 @@ public class Board {
             int h = Integer.parseInt(aArgs[4]);
             String color = aArgs[5];
             String message = "";
-            for (int i = 6; i < aArgs.length; i++)
-                message += aArgs[i];
+            for (int i = 6; i < aArgs.length; i++) {
+                if (i != aArgs.length - 1)
+                    message += aArgs[i];
+                else
+                    message += aArgs[i] + " ";
+            }
             outMsg = "";
 
-            boolean added = addNote(x, y, w, h, color, message.toString());
+            boolean added = addNote(x, y, w, h, color, message);
             if (added) outMsg += "Note added.";
             else outMsg += "Note not added. Please try again.";
         } else if (command.equals("PIN")) {
