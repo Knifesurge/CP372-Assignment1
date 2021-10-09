@@ -36,6 +36,6 @@ public class Pin {
 
     @Override
     public String toString(){
-        return "\n\n" + this.x + " " + this.y+"\n\n";
+        return this.x + " " + this.y;
     }
 }
