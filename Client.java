@@ -5,7 +5,8 @@ import java.net.Socket;
 
 
 
-import java.io.*; 
+import java.io.*;
+import java.net.UnknownHostException;
 
 
 /**
@@ -14,38 +15,58 @@ import java.io.*;
  * Connects to Server, sends requests to Server, displays responses.
  */
 public class Client implements Runnable {
-    public static void main(String argv[]) throws IOException{
-        PrintWriter output = null;
-        BufferedReader input = null,stdIn = null;
-        String localHost = argv[0];
-        int port = Integer.parseInt(argv[1]);
-        Socket Client_Socket = null;
+
+    private static Socket client_socket;
+    private PrintWriter output;
+    private BufferedReader input;
+    private BufferedReader stdIn;
+    private String serverAddr;
+    private int serverPort;
+
+    public Client() {
+
+    }
+
+    public void connect(String ip, int port) {
+        this.serverAddr = ip;
+        this.serverPort = port;
         try {
-            Client_Socket = new Socket(localHost,port);
-            output = new PrintWriter(Client_Socket.getOutputStream(),true);
-            input = new BufferedReader(new InputStreamReader(Client_Socket.getInputStream()));
+            client_socket = new Socket(ip, port);
+            output = new PrintWriter(client_socket.getOutputStream(), true);
+            input = new BufferedReader(new InputStreamReader(client_socket.getInputStream()));
             stdIn = new BufferedReader(new InputStreamReader(System.in));
-            
+        } catch (UnknownHostException e) {
+            System.err.println("Unknown Host, please retry!");
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            System.err.println("Unable to read/write, please try again!");
+        }
+    }
+
+    public void close() {
+        try {
+            output.close();
+            input.close();
+            client_socket.close();
+        } catch (IOException e) {
+            System.err.println("Error closing in/out streams or socket!");
             e.printStackTrace();
         }
-        String UserCommand;
-        //UserCommand = stdIn.readLine();
-        while ((UserCommand = stdIn.readLine())!=null){
-            //if(UserCommand.equals("DISCONNECT")) break;
-            output.println(UserCommand);
-            System.out.println(input.readLine());
-           
-        }
-        output.close();
-        input.close();
-        Client_Socket.close();
     }
 
     @Override
     public void run() {
-        // TODO Auto-generated method stub
-        
+        String UserCommand;
+        //UserCommand = stdIn.readLine();
+        try {
+            while ((UserCommand = stdIn.readLine()) != null) {
+                //if(UserCommand.equals("DISCONNECT")) break;
+                output.println(UserCommand);
+                System.out.println(input.readLine());
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        close();
     }
 }

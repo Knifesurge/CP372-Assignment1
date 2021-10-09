@@ -27,6 +27,7 @@ public class Server {
             thread.start();
         }
     }
+    
     private static class BoardRunner implements Runnable{
         private Socket Int_socket = null;
         private Board int_board = null; 
@@ -68,7 +69,6 @@ public class Server {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-
         }
         public BoardRunner(Board board, Socket socket){
             this.Int_socket = socket;

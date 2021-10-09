@@ -1,9 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-package BulletinBoardGUI;
-
 import java.awt.Color;
 import java.io.IOException;
 import java.net.Socket;
@@ -19,7 +13,7 @@ import java.util.LinkedList;
 public class ClientGUI extends javax.swing.JFrame {
 
     private LinkedList<String> messageBuffer;
-    private Socket socket;
+    private static Client client;
     
     /**
      * Creates new form ClientGUI
@@ -272,7 +266,7 @@ public class ClientGUI extends javax.swing.JFrame {
         int portNumber = Integer.parseInt(portTextField.getText());
         
         // Attempt a connection
-        connect(IPAddress, portNumber);
+        client.connect(IPAddress, portNumber);
     }//GEN-LAST:event_connectButtonActionPerformed
 
     private void commandSelectionItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_commandSelectionItemStateChanged
@@ -550,16 +544,6 @@ public class ClientGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_referstoTextFieldFocusLost
 
-    private void connect(String IPAddress, int port) {
-        try {
-            socket = new Socket(IPAddress, port);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
     public void receiveMessage(String message) {
         messageBuffer.add(message);
         clientTerminal.append(message+"\n");
@@ -598,6 +582,10 @@ public class ClientGUI extends javax.swing.JFrame {
                 new ClientGUI().setVisible(true);
             }
         });
+
+        /* Create the Client object to handle connections */
+        client = new Client();
+        java.awt.EventQueue.invokeLater(client);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
