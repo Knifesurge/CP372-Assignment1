@@ -56,11 +56,11 @@ public class ClientGUI extends javax.swing.JFrame {
         argOption2Label = new javax.swing.JLabel();
         xTextField = new javax.swing.JTextField();
         yTextField = new javax.swing.JTextField();
-        pinsToggle = new javax.swing.JToggleButton();
         argOption3Label = new javax.swing.JLabel();
         referstoTextField = new javax.swing.JTextField();
         wTextField = new javax.swing.JTextField();
         hTextField = new javax.swing.JTextField();
+        pinsButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Bulletin Board");
@@ -136,8 +136,6 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         });
 
-        pinsToggle.setText("Get All Pins");
-
         argOption3Label.setLabelFor(argOption3Label);
         argOption3Label.setText("Refers To");
 
@@ -168,6 +166,14 @@ public class ClientGUI extends javax.swing.JFrame {
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
                 hTextFieldFocusLost(evt);
+            }
+        });
+
+        pinsButton.setText("Get All Pins");
+        pinsButton.setActionCommand("GetAllPins");
+        pinsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pinsButtonActionPerformed(evt);
             }
         });
 
@@ -204,7 +210,7 @@ public class ClientGUI extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(argOption1TextField, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(pinsToggle))
+                                        .addComponent(pinsButton))
                                     .addComponent(argumentDescriptorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(sendMessageButton))
@@ -245,7 +251,7 @@ public class ClientGUI extends javax.swing.JFrame {
                     .addComponent(commandSelection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(argOption1TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(argOption1Label)
-                    .addComponent(pinsToggle))
+                    .addComponent(pinsButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(argOption2Label)
@@ -314,9 +320,9 @@ public class ClientGUI extends javax.swing.JFrame {
                 referstoTextField.setText("refers to");
                 argOption3Label.setVisible(true);
                 argOption3Label.setText("Refers To");
-                pinsToggle.setVisible(true);
+                pinsButton.setVisible(true);
             } else if (item.equals("POST")) {
-                pinsToggle.setVisible(false);
+                pinsButton.setVisible(false);
                 argOption1TextField.setEditable(true);
                 argOption1TextField.setBackground(Color.WHITE);
                 argOption1TextField.setText("color");
@@ -356,7 +362,7 @@ public class ClientGUI extends javax.swing.JFrame {
                 referstoTextField.setEditable(false);
                 referstoTextField.setBackground(Color.GRAY);
                 referstoTextField.setText("");
-                pinsToggle.setVisible(false);
+                pinsButton.setVisible(false);
             } else {
                 // SHAKE, CLEAR, DISCONNECT
                 argOption1TextField.setEditable(false);
@@ -377,7 +383,7 @@ public class ClientGUI extends javax.swing.JFrame {
                 referstoTextField.setEditable(false);
                 referstoTextField.setBackground(Color.GRAY);
                 referstoTextField.setText("");
-                pinsToggle.setVisible(false);
+                pinsButton.setVisible(false);
             }
         }
     }//GEN-LAST:event_commandSelectionItemStateChanged
@@ -548,7 +554,7 @@ public class ClientGUI extends javax.swing.JFrame {
     private void referstoTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_referstoTextFieldFocusGained
         // Check to see if some of the placeholder text is still here
         String text = referstoTextField.getText();
-        if (text.equalsIgnoreCase("refers to")) {
+        if (text.equalsIgnoreCase("refers to") || text.equalsIgnoreCase("message")) {
             // Placeholder text present, clear the text for User-defined text
             referstoTextField.setText("");
             referstoTextField.setCaretPosition(0);
@@ -565,6 +571,15 @@ public class ClientGUI extends javax.swing.JFrame {
             referstoTextField.setText(placeholderText);
         }
     }//GEN-LAST:event_referstoTextFieldFocusLost
+
+    private void pinsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pinsButtonActionPerformed
+        if (evt.getActionCommand().equals("GetAllPins")) {
+            String[] message = new String[2];
+            message[0] = "GET";
+            message[1] = "PINS";
+            client.sendMessage(message, true);
+        }
+    }//GEN-LAST:event_pinsButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -616,7 +631,7 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JLabel errorMessageLabel;
     private javax.swing.JTextField hTextField;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JToggleButton pinsToggle;
+    private javax.swing.JButton pinsButton;
     private javax.swing.JLabel portLabel;
     private javax.swing.JTextField portTextField;
     private javax.swing.JTextField referstoTextField;
