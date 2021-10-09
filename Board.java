@@ -56,7 +56,7 @@ public class Board {
                 String color = aArgs.length >= 2 ? aArgs[1].substring("color=".length()) : "";
                 String[] contains = new String[]{"-1", "-1"};
                 if (aArgs.length >= 3 && aArgs[2].contains("contains=")) {
-                    contains = aArgs[2].substring("contains=".length()).split(" ");
+                    contains[0] = aArgs[2].substring("contains=".length());
                     contains[1] = aArgs[3]; // Second coord will be in the next spot
                 }
                 for (String s : contains) System.out.println(s);
