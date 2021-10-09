@@ -274,10 +274,12 @@ public class ClientGUI extends javax.swing.JFrame {
 
         System.out.println("Attempting connection to " + IPAddress + ":" + portNumber);
 
-        // Attempt a connection
-        client.connect(IPAddress, portNumber);
-        // Start the SwingWorker client to handle the client connection
-        client.execute();
+        // Attempt a connection if not already established
+        if (!client.isConnected()) {
+            client.connect(IPAddress, portNumber);
+            // Start the SwingWorker client to handle the client connection
+            client.execute();
+        }
     }//GEN-LAST:event_connectButtonActionPerformed
 
     private void commandSelectionItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_commandSelectionItemStateChanged
