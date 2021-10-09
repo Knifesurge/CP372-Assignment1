@@ -411,8 +411,10 @@ public class ClientGUI extends javax.swing.JFrame {
             // Any unused spaces in array will be null value
             if (command.equals("GET")) {
                 message[1] = "color="+color;
-                message[2] = "contains="+x+" "+y;
-                message[3] = "refersTo="+content;
+                if (x != -1 && y != -1)
+                    message[2] = "contains=" + x + " " + y;
+                if (!content.isEmpty())
+                    message[3] = "refersTo="+content;
             } else if (command.equals("POST")) {
                 message[1] = String.valueOf(x);
                 message[2] = String.valueOf(y);

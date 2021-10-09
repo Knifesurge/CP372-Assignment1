@@ -194,7 +194,7 @@ public class Board {
     public synchronized ArrayList<Note> filterNotes(String color, String contains, String refersTo) {
         ArrayList<Note> fnotes = new ArrayList<Note>();
         // Get the coords out of the string
-        String[] containsTmp = color.split(" ");
+        String[] containsTmp = contains.split(" ");
         int x = Integer.parseInt(containsTmp[0]);
         int y = Integer.parseInt(containsTmp[1]);
         // Only filter on filters that are present
@@ -205,57 +205,62 @@ public class Board {
         // Checks which filters are present and filters the notes accordingly.
         // The filtered Notes are then added to the fnotes List above, to be returned to the caller.
         // Any suggestions on how to do this without this big branch would be welcomed :)
-        if (fColor) {
-            if (fContains) {
-                if (fRefersTo) {
+        if (color.equals("all")){
+            // Requesting all colors, which is really just all notes
+            fnotes.addAll(getNotes());
+        } else {
+            if (fColor) {
+                if (fContains) {
+                    if (fRefersTo) {
+                        fnotes.addAll(
+                                notes.stream()
+                                        .filter(n -> n.getColor().equals(color) &&
+                                                checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
+                                                        x, y, 0, 0) &&
+                                                n.getMessage().contains(refersTo)
+                                        ).collect(Collectors.toList())
+                        );
+                    }
+                } else if (fRefersTo) {
                     fnotes.addAll(
                             notes.stream()
                                     .filter(n -> n.getColor().equals(color) &&
-                                            checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
-                                                    x, y, 0, 0) &&
                                             n.getMessage().contains(refersTo)
+                                    ).collect(Collectors.toList())
+                    );
+                } else {
+                    fnotes.addAll(
+                            notes.stream()
+                                    .filter(n -> n.getColor().equals(color)
+                                    ).collect(Collectors.toList())
+                    );
+                }
+            } else if (fContains) {
+                if (fRefersTo) {
+                    fnotes.addAll(
+                            notes.stream()
+                                    .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
+                                            x, y, 0, 0) &&
+                                            n.getMessage().contains(refersTo)
+                                    ).collect(Collectors.toList())
+                    );
+                } else {
+                    fnotes.addAll(
+                            notes.stream()
+                                    .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
+                                            x, y, 0, 0)
                                     ).collect(Collectors.toList())
                     );
                 }
             } else if (fRefersTo) {
                 fnotes.addAll(
                         notes.stream()
-                                .filter(n -> n.getColor().equals(color) &&
-                                        n.getMessage().contains(refersTo)
+                                .filter(n -> n.getMessage().contains(refersTo)
                                 ).collect(Collectors.toList())
                 );
             } else {
-                fnotes.addAll(
-                        notes.stream()
-                                .filter(n -> n.getColor().equals(color)
-                                ).collect(Collectors.toList())
-                );
+                fnotes.addAll(notes);
             }
-        } else if (fContains) {
-            if (fRefersTo) {
-                fnotes.addAll(
-                        notes.stream()
-                                .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
-                                        x, y, 0, 0) &&
-                                        n.getMessage().contains(refersTo)
-                                ).collect(Collectors.toList())
-                );
-            } else {
-                fnotes.addAll(
-                        notes.stream()
-                                .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
-                                        x, y, 0, 0)
-                                ).collect(Collectors.toList())
-                );
-            }
-        } else if (fRefersTo) {
-            fnotes.addAll(
-                    notes.stream()
-                            .filter(n -> n.getMessage().contains(refersTo)
-                            ).collect(Collectors.toList())
-            );
-        } else {
-            fnotes.addAll(notes);
         }
         return fnotes;
     }
