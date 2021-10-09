@@ -53,6 +53,12 @@ public class Server {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+
+            StringBuilder welcomeMessage = new StringBuilder();
+            welcomeMessage.append(int_board.getWidth() + " " + int_board.getHeight() + "\n");
+            int_board.getColors().forEach(c -> welcomeMessage.append(c + " "));
+            out.println(welcomeMessage);
+
             String Inline, Outline;
             Outline = int_board.inputParser(null);
             out.println(Outline);
