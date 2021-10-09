@@ -16,7 +16,7 @@ public class Board {
     public Board(int width, int height, String... colors) {
         this.width = width;
         this.height = height;
-        this.colors = new ArrayList(Arrays.asList(colors));
+        this.colors = new ArrayList<String>(Arrays.asList(colors));
         this.notes = new ArrayList<Note>();
         this.pins = new ArrayList<Pin>();
     }
