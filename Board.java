@@ -18,8 +18,9 @@ public class Board {
         this.colors = Arrays.asList(colors);
     }
     public String inputParser(String args){
+        if (args == null) return "Welcome";
+
         String[] aArgs = args.split(" ");
-        if (args.isEmpty()) return "Welcome";
 
         if (aArgs[0].equals("DISCONNECT")) return aArgs[0];
 
