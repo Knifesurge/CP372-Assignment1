@@ -68,4 +68,15 @@ public class Note {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append("\nColor: " + this.color+"\n");
+        b.append("Coords: (" + this.x + ", " + this.y + ")\n");
+        b.append("Dimensions: (" + this.width + ", " + this.height + ")\n");
+        b.append("Status: " + (this.pinned ? "Pinned" : "Not Pinned") + "\n");
+        b.append("Content: " + this.message+"\n");
+        return b.toString();
+    }
 }

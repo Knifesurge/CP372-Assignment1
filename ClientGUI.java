@@ -56,11 +56,11 @@ public class ClientGUI extends javax.swing.JFrame {
         argOption2Label = new javax.swing.JLabel();
         xTextField = new javax.swing.JTextField();
         yTextField = new javax.swing.JTextField();
-        pinsToggle = new javax.swing.JToggleButton();
         argOption3Label = new javax.swing.JLabel();
         referstoTextField = new javax.swing.JTextField();
         wTextField = new javax.swing.JTextField();
         hTextField = new javax.swing.JTextField();
+        pinsButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Bulletin Board");
@@ -136,8 +136,6 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         });
 
-        pinsToggle.setText("Get All Pins");
-
         argOption3Label.setLabelFor(argOption3Label);
         argOption3Label.setText("Refers To");
 
@@ -168,6 +166,14 @@ public class ClientGUI extends javax.swing.JFrame {
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
                 hTextFieldFocusLost(evt);
+            }
+        });
+
+        pinsButton.setText("Get All Pins");
+        pinsButton.setActionCommand("GetAllPins");
+        pinsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pinsButtonActionPerformed(evt);
             }
         });
 
@@ -204,7 +210,7 @@ public class ClientGUI extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(argOption1TextField, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(pinsToggle))
+                                        .addComponent(pinsButton))
                                     .addComponent(argumentDescriptorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(sendMessageButton))
@@ -245,7 +251,7 @@ public class ClientGUI extends javax.swing.JFrame {
                     .addComponent(commandSelection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(argOption1TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(argOption1Label)
-                    .addComponent(pinsToggle))
+                    .addComponent(pinsButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(argOption2Label)
@@ -274,10 +280,14 @@ public class ClientGUI extends javax.swing.JFrame {
 
         System.out.println("Attempting connection to " + IPAddress + ":" + portNumber);
 
-        // Attempt a connection
-        client.connect(IPAddress, portNumber);
-        // Start the SwingWorker client to handle the client connection
-        client.execute();
+        // Attempt a connection if not already established
+        if (!client.isConnected()) {
+            client.connect(IPAddress, portNumber);
+            // Start the SwingWorker client to handle the client connection
+            client.execute();
+        } else {
+            clientTerminal.append("SYSTEM: You can only be connected to one server at a time.\n");
+        }
     }//GEN-LAST:event_connectButtonActionPerformed
 
     private void commandSelectionItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_commandSelectionItemStateChanged
@@ -312,9 +322,9 @@ public class ClientGUI extends javax.swing.JFrame {
                 referstoTextField.setText("refers to");
                 argOption3Label.setVisible(true);
                 argOption3Label.setText("Refers To");
-                pinsToggle.setVisible(true);
+                pinsButton.setVisible(true);
             } else if (item.equals("POST")) {
-                pinsToggle.setVisible(false);
+                pinsButton.setVisible(false);
                 argOption1TextField.setEditable(true);
                 argOption1TextField.setBackground(Color.WHITE);
                 argOption1TextField.setText("color");
@@ -354,7 +364,7 @@ public class ClientGUI extends javax.swing.JFrame {
                 referstoTextField.setEditable(false);
                 referstoTextField.setBackground(Color.GRAY);
                 referstoTextField.setText("");
-                pinsToggle.setVisible(false);
+                pinsButton.setVisible(false);
             } else {
                 // SHAKE, CLEAR, DISCONNECT
                 argOption1TextField.setEditable(false);
@@ -375,66 +385,70 @@ public class ClientGUI extends javax.swing.JFrame {
                 referstoTextField.setEditable(false);
                 referstoTextField.setBackground(Color.GRAY);
                 referstoTextField.setText("");
-                pinsToggle.setVisible(false);
+                pinsButton.setVisible(false);
             }
         }
     }//GEN-LAST:event_commandSelectionItemStateChanged
 
     private void sendMessageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendMessageButtonActionPerformed
         if (evt.getActionCommand().equals("Send")) {
-            String command = (String) commandSelection.getSelectedItem();
-            String[] message = new String[7];
-            
-            String color = argOption1TextField.getText().equals("color") ? "all" : argOption1TextField.getText();
-            int x = 
-                    xTextField.getText().equals("x") || xTextField.getText().isBlank() 
-                    ? -1 
-                    : Integer.parseInt(xTextField.getText());
-            int y = yTextField.getText().equals("y") || yTextField.getText().isBlank() 
-                    ? -1 
-                    : Integer.parseInt(yTextField.getText());
-            int w = wTextField.getText().equals("w") || wTextField.getText().isBlank()
-                    ? -1 
-                    : Integer.parseInt(wTextField.getText());
-            int h = hTextField.getText().equals("h") || hTextField.getText().isBlank()
-                    ? -1 
-                    : Integer.parseInt(hTextField.getText());
-            String content = referstoTextField.getText().equals("refers to") ||
-                    referstoTextField.getText().equals("message")
-                    ?
+            if (client.isConnected()) {
+                String command = (String) commandSelection.getSelectedItem();
+                String[] message = new String[7];
+
+                String color = argOption1TextField.getText().equals("color") ? "all" : argOption1TextField.getText();
+                int x =
+                        xTextField.getText().equals("x") || xTextField.getText().isBlank()
+                                ? -1
+                                : Integer.parseInt(xTextField.getText());
+                int y = yTextField.getText().equals("y") || yTextField.getText().isBlank()
+                        ? -1
+                        : Integer.parseInt(yTextField.getText());
+                int w = wTextField.getText().equals("w") || wTextField.getText().isBlank()
+                        ? -1
+                        : Integer.parseInt(wTextField.getText());
+                int h = hTextField.getText().equals("h") || hTextField.getText().isBlank()
+                        ? -1
+                        : Integer.parseInt(hTextField.getText());
+                String content = referstoTextField.getText().equals("refers to") ||
+                        referstoTextField.getText().equals("message")
+                        ?
                         ""
-                    :
+                        :
                         referstoTextField.getText();
 
-            message[0] = command;
+                message[0] = command;
 
-            // Any unused spaces in array will be null value
-            if (command.equals("GET")) {
-                message[1] = "color="+color;
-                if (x != -1 && y != -1)
-                    message[2] = "contains=" + x + " " + y;
-                if (!content.isEmpty())
-                    message[3] = "refersTo="+content;
-            } else if (command.equals("POST")) {
-                message[1] = String.valueOf(x);
-                message[2] = String.valueOf(y);
-                message[3] = String.valueOf(w);
-                message[4] = String.valueOf(h);
-                message[5] = color;
-                message[6] = content;
-            } else if (command.equals("PIN") || command.equals("UNPIN")) {
-                message[1] = x+","+y;
+                // Any unused spaces in array will be null value
+                if (command.equals("GET")) {
+                    message[1] = "color=" + color;
+                    if (x != -1 && y != -1)
+                        message[2] = "contains=" + x + " " + y;
+                    if (!content.isEmpty())
+                        message[3] = "refersTo=" + content;
+                } else if (command.equals("POST")) {
+                    message[1] = String.valueOf(x);
+                    message[2] = String.valueOf(y);
+                    message[3] = String.valueOf(w);
+                    message[4] = String.valueOf(h);
+                    message[5] = color;
+                    message[6] = content;
+                } else if (command.equals("PIN") || command.equals("UNPIN")) {
+                    message[1] = x + "," + y;
+                }
+
+                boolean argsRequired = command.equalsIgnoreCase("shake") ||
+                        command.equalsIgnoreCase("clear") ||
+                        command.equalsIgnoreCase("disconnect")
+                        ?
+                        false
+                        :
+                        true;
+
+                client.sendMessage(message, argsRequired);
+            } else {
+                clientTerminal.append("SYSTEM: Please connect to a server before sending a message.\n");
             }
-
-            boolean argsRequired = command.equalsIgnoreCase("shake") ||
-                    command.equalsIgnoreCase("clear") ||
-                    command.equalsIgnoreCase("disconnect")
-                    ?
-                    false
-                    :
-                    true;
-
-            client.sendMessage(message, argsRequired);
         }
     }//GEN-LAST:event_sendMessageButtonActionPerformed
 
@@ -546,7 +560,7 @@ public class ClientGUI extends javax.swing.JFrame {
     private void referstoTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_referstoTextFieldFocusGained
         // Check to see if some of the placeholder text is still here
         String text = referstoTextField.getText();
-        if (text.equalsIgnoreCase("refers to")) {
+        if (text.equalsIgnoreCase("refers to") || text.equalsIgnoreCase("message")) {
             // Placeholder text present, clear the text for User-defined text
             referstoTextField.setText("");
             referstoTextField.setCaretPosition(0);
@@ -563,6 +577,19 @@ public class ClientGUI extends javax.swing.JFrame {
             referstoTextField.setText(placeholderText);
         }
     }//GEN-LAST:event_referstoTextFieldFocusLost
+
+    private void pinsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pinsButtonActionPerformed
+        if (evt.getActionCommand().equals("GetAllPins")) {
+            if (client.isConnected()) {
+                String[] message = new String[2];
+                message[0] = "GET";
+                message[1] = "PINS";
+                client.sendMessage(message, true);
+            } else {
+                clientTerminal.append("SYSTEM: Please connect to a server before sending a message.\n");
+            }
+        }
+    }//GEN-LAST:event_pinsButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -614,7 +641,7 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JLabel errorMessageLabel;
     private javax.swing.JTextField hTextField;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JToggleButton pinsToggle;
+    private javax.swing.JButton pinsButton;
     private javax.swing.JLabel portLabel;
     private javax.swing.JTextField portTextField;
     private javax.swing.JTextField referstoTextField;

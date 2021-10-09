@@ -18,7 +18,7 @@ import java.net.UnknownHostException;
 public class Client extends SwingWorker {
 
     private static Socket client_socket;
-    private static boolean connected = false;
+    private boolean connected = false;
     private PrintWriter output;
     private BufferedReader input;
     private BufferedReader stdIn;
@@ -45,6 +45,8 @@ public class Client extends SwingWorker {
         return serverResp;
     }
 
+    public boolean isConnected() { return connected; }
+
     public void sendMessage(String[] message, boolean argsRequired) {
         StringBuilder outMsg = new StringBuilder();
         if (!argsRequired) {
@@ -53,7 +55,8 @@ public class Client extends SwingWorker {
         } else {
             // Send the arguments off as well
             for (String s : message) {
-                outMsg.append(s + " ");
+                if (s != null && !s.isEmpty())
+                    outMsg.append(s + " ");
             }
         }
         System.out.println("Sending message: " + outMsg.toString());

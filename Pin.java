@@ -33,4 +33,9 @@ public class Pin {
     public List<Note> getPinnedNotes() {
         return pinnedNotes;
     }
+
+    @Override
+    public String toString(){
+        return this.x + " " + this.y;
+    }
 }

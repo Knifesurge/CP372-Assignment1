@@ -27,24 +27,59 @@ public class Board {
 
         String outMsg = "ERROR";
         String[] splitArgs = args.split(" ");
-        String[] aArgs = Arrays.stream(splitArgs)
-                .filter(s -> (s != null))
-                .toArray(String[]::new);
+        // Attempt to remove the null values
+        ArrayList<String> temp = new ArrayList<String>();
+        for (String s : splitArgs)
+            if (!s.isEmpty() && !s.equals("null"))
+                temp.add(s);
+
+        String[] aArgs = temp.toArray(new String[0]);
+        for (String s : aArgs) System.out.println(s);
         String command = aArgs[0];
 
         if (command.equals("DISCONNECT")) {
             return command;
         } else if (command.equals("GET")) {
-            String color = aArgs.length >= 2 ? aArgs[1].substring("color=".length()) : "";
-            String[] contains = aArgs.length >= 3 ? aArgs[2].substring("contains=".length()).split(" ") : new String[]{"-1","-1"};
-            int x = Integer.parseInt(contains[0]);
-            int y = Integer.parseInt(contains[1]);
-            String refersTo = aArgs.length >= 4 ? aArgs[3].substring("refersTo=".length()) : "";
-            ArrayList<Note> notes = filterNotes(color, new String(x+" "+y), refersTo);
-            outMsg = "";
-            for (Note n : notes) {
-                outMsg += n.toString();
-                outMsg += "\n";
+            // Check if we are just getting all of the pins
+            if (aArgs[1].equals("PINS")) {
+                outMsg = "";
+                ArrayList<Pin> pins = new ArrayList<Pin>(getPins());
+                for (Pin p : pins) {
+                    outMsg += p.toString();
+                    outMsg += "\n";
+                }
+                if (pins.isEmpty()) {
+                    outMsg = "No Pins found.";
+                }
+            } else {
+                // Getting some notes, process the filters/arguments
+                String color = aArgs.length >= 2 ? aArgs[1].substring("color=".length()) : "";
+                String[] contains = new String[]{"-1", "-1"};
+                if (aArgs.length >= 3 && aArgs[2].contains("contains=")) {
+                    contains[0] = aArgs[2].substring("contains=".length());
+                    contains[1] = aArgs[3]; // Second coord will be in the next spot
+                }
+                for (String s : contains) System.out.println(s);
+                int x = Integer.parseInt(contains[0]);
+                int y = Integer.parseInt(contains[1]);
+                String refersTo = "";
+                if (aArgs.length >= 5 && aArgs[4].contains("refersTo="))
+                    refersTo = aArgs[4].substring("refersTo=".length());
+                System.out.println("refersTo=" + refersTo);
+                ArrayList<Note> notes;
+                if (x == -1 || y == -1)
+                    notes = filterNotes(color, "", refersTo);
+                else
+                    notes = filterNotes(color, new String(x + " " + y), refersTo);
+                outMsg = "";
+                for (Note n : notes) {
+                    System.out.println("Adding note.." + n.toString());
+                    outMsg += n.toString();
+                    outMsg += "\n";
+                }
+                if (notes.isEmpty()) {
+                    outMsg = "No Notes found.";
+                }
             }
         } else if (command.equals("POST")) {
             int x = Integer.parseInt(aArgs[1]);
@@ -52,10 +87,16 @@ public class Board {
             int w = Integer.parseInt(aArgs[3]);
             int h = Integer.parseInt(aArgs[4]);
             String color = aArgs[5];
-            String message = aArgs[6];
+            String message = "";
+            for (int i = 6; i < aArgs.length; i++) {
+                if (i != aArgs.length - 1)
+                    message += aArgs[i] + " ";
+                else
+                    message += aArgs[i];
+            }
             outMsg = "";
-
-            boolean added = addNote(x, y, w, h, color, message.toString());
+            System.out.println("Message: " + message);
+            boolean added = addNote(x, y, w, h, color, message);
             if (added) outMsg += "Note added.";
             else outMsg += "Note not added. Please try again.";
         } else if (command.equals("PIN")) {
@@ -80,7 +121,7 @@ public class Board {
             outMsg = "";
             boolean shaked = shake();
             if (shaked) outMsg += "Board shaken.";
-            else outMsg += "Something happened while shaking the Board. Please try again.";
+            else outMsg += "Board shaken. Nothing was removed.";
         } else if (command.equals("CLEAR")) {
             clear();
             outMsg = "Board cleared.";
@@ -102,6 +143,10 @@ public class Board {
 
     public List<Note> getNotes() {
         return notes;
+    }
+
+    public List<Pin> getPins() {
+        return pins;
     }
 
     /**
@@ -196,10 +241,6 @@ public class Board {
 
     public synchronized ArrayList<Note> filterNotes(String color, String contains, String refersTo) {
         ArrayList<Note> fnotes = new ArrayList<Note>();
-        // Get the coords out of the string
-        String[] containsTmp = contains.split(" ");
-        int x = Integer.parseInt(containsTmp[0]);
-        int y = Integer.parseInt(containsTmp[1]);
         // Only filter on filters that are present
         boolean fColor = color.isEmpty() ? false : true;
         boolean fContains = contains.isEmpty() ? false : true;
@@ -214,6 +255,10 @@ public class Board {
         } else {
             if (fColor) {
                 if (fContains) {
+                    // Get the coords out of the string
+                    String[] containsTmp = contains.split(" ");
+                    int x = Integer.parseInt(containsTmp[0]);
+                    int y = Integer.parseInt(containsTmp[1]);
                     if (fRefersTo) {
                         fnotes.addAll(
                                 notes.stream()
@@ -239,6 +284,10 @@ public class Board {
                     );
                 }
             } else if (fContains) {
+                // Get the coords out of the string
+                String[] containsTmp = contains.split(" ");
+                int x = Integer.parseInt(containsTmp[0]);
+                int y = Integer.parseInt(containsTmp[0]);
                 if (fRefersTo) {
                     fnotes.addAll(
                             notes.stream()
