@@ -57,6 +57,7 @@ public class Server {
             StringBuilder welcomeMessage = new StringBuilder();
             welcomeMessage.append(int_board.getWidth() + " " + int_board.getHeight() + "\n");
             int_board.getColors().forEach(c -> welcomeMessage.append(c + " "));
+            System.out.println("Sending welcome message: \n" + welcomeMessage);
             out.println(welcomeMessage);
 
             String Inline, Outline;
