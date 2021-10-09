@@ -33,7 +33,7 @@ public class Server {
     }
 
     private static class BoardRunner implements Runnable{
-        private Socket Int_socket = null;
+        private Socket int_socket = null;
         private Board int_board = null; 
         @Override
         public void run() {
@@ -42,13 +42,13 @@ public class Server {
             BufferedReader in = null;
 
             try {
-                out = new PrintWriter(Int_socket.getOutputStream(),true);
+                out = new PrintWriter(int_socket.getOutputStream(),true);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             try {
-                in = new BufferedReader(new InputStreamReader(Int_socket.getInputStream()));
+                in = new BufferedReader(new InputStreamReader(int_socket.getInputStream()));
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -65,9 +65,13 @@ public class Server {
             out.println(Outline);
             try {
                 while ((inLine = in.readLine())!= null){
+                    System.out.println("Client: " + inLine);
                     Outline = int_board.inputParser(inLine);
                     out.println(Outline);
-                    if (Outline.equals("DISCONNECT")) break;
+                    if (Outline.equals("DISCONNECT")) {
+                        out.println("Goodbye.");
+                        int_socket.close();
+                    }
                 }
             } catch (IOException e) {
                 // TODO Auto-generated catch block
@@ -82,7 +86,7 @@ public class Server {
             }
         }
         public BoardRunner(Board board, Socket socket){
-            this.Int_socket = socket;
+            this.int_socket = socket;
             this.int_board = board;
         }
     }
