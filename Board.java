@@ -118,7 +118,7 @@ public class Board {
             outMsg = "";
             boolean shaked = shake();
             if (shaked) outMsg += "Board shaken.";
-            else outMsg += "Something happened while shaking the Board. Please try again.";
+            else outMsg += "Board shaken. Nothing was removed.";
         } else if (command.equals("CLEAR")) {
             clear();
             outMsg = "Board cleared.";
