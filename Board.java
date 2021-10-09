@@ -27,6 +27,9 @@ public class Board {
 
         String outMsg = "ERROR";
         String[] aArgs = args.split(" ");
+        aArgs = Arrays.stream(aArgs)
+                .filter(s -> (s != null))
+                .toArray(String[]::new);
         String command = aArgs[0];
 
         if (command.equals("DISCONNECT")) {
