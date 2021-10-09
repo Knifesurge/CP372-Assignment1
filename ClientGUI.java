@@ -285,6 +285,8 @@ public class ClientGUI extends javax.swing.JFrame {
             client.connect(IPAddress, portNumber);
             // Start the SwingWorker client to handle the client connection
             client.execute();
+        } else {
+            clientTerminal.append("SYSTEM: You can only be connected to one server at a time.\n");
         }
     }//GEN-LAST:event_connectButtonActionPerformed
 
@@ -390,59 +392,63 @@ public class ClientGUI extends javax.swing.JFrame {
 
     private void sendMessageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendMessageButtonActionPerformed
         if (evt.getActionCommand().equals("Send")) {
-            String command = (String) commandSelection.getSelectedItem();
-            String[] message = new String[7];
-            
-            String color = argOption1TextField.getText().equals("color") ? "all" : argOption1TextField.getText();
-            int x = 
-                    xTextField.getText().equals("x") || xTextField.getText().isBlank() 
-                    ? -1 
-                    : Integer.parseInt(xTextField.getText());
-            int y = yTextField.getText().equals("y") || yTextField.getText().isBlank() 
-                    ? -1 
-                    : Integer.parseInt(yTextField.getText());
-            int w = wTextField.getText().equals("w") || wTextField.getText().isBlank()
-                    ? -1 
-                    : Integer.parseInt(wTextField.getText());
-            int h = hTextField.getText().equals("h") || hTextField.getText().isBlank()
-                    ? -1 
-                    : Integer.parseInt(hTextField.getText());
-            String content = referstoTextField.getText().equals("refers to") ||
-                    referstoTextField.getText().equals("message")
-                    ?
+            if (client.isConnected()) {
+                String command = (String) commandSelection.getSelectedItem();
+                String[] message = new String[7];
+
+                String color = argOption1TextField.getText().equals("color") ? "all" : argOption1TextField.getText();
+                int x =
+                        xTextField.getText().equals("x") || xTextField.getText().isBlank()
+                                ? -1
+                                : Integer.parseInt(xTextField.getText());
+                int y = yTextField.getText().equals("y") || yTextField.getText().isBlank()
+                        ? -1
+                        : Integer.parseInt(yTextField.getText());
+                int w = wTextField.getText().equals("w") || wTextField.getText().isBlank()
+                        ? -1
+                        : Integer.parseInt(wTextField.getText());
+                int h = hTextField.getText().equals("h") || hTextField.getText().isBlank()
+                        ? -1
+                        : Integer.parseInt(hTextField.getText());
+                String content = referstoTextField.getText().equals("refers to") ||
+                        referstoTextField.getText().equals("message")
+                        ?
                         ""
-                    :
+                        :
                         referstoTextField.getText();
 
-            message[0] = command;
+                message[0] = command;
 
-            // Any unused spaces in array will be null value
-            if (command.equals("GET")) {
-                message[1] = "color="+color;
-                if (x != -1 && y != -1)
-                    message[2] = "contains=" + x + " " + y;
-                if (!content.isEmpty())
-                    message[3] = "refersTo="+content;
-            } else if (command.equals("POST")) {
-                message[1] = String.valueOf(x);
-                message[2] = String.valueOf(y);
-                message[3] = String.valueOf(w);
-                message[4] = String.valueOf(h);
-                message[5] = color;
-                message[6] = content;
-            } else if (command.equals("PIN") || command.equals("UNPIN")) {
-                message[1] = x+","+y;
+                // Any unused spaces in array will be null value
+                if (command.equals("GET")) {
+                    message[1] = "color=" + color;
+                    if (x != -1 && y != -1)
+                        message[2] = "contains=" + x + " " + y;
+                    if (!content.isEmpty())
+                        message[3] = "refersTo=" + content;
+                } else if (command.equals("POST")) {
+                    message[1] = String.valueOf(x);
+                    message[2] = String.valueOf(y);
+                    message[3] = String.valueOf(w);
+                    message[4] = String.valueOf(h);
+                    message[5] = color;
+                    message[6] = content;
+                } else if (command.equals("PIN") || command.equals("UNPIN")) {
+                    message[1] = x + "," + y;
+                }
+
+                boolean argsRequired = command.equalsIgnoreCase("shake") ||
+                        command.equalsIgnoreCase("clear") ||
+                        command.equalsIgnoreCase("disconnect")
+                        ?
+                        false
+                        :
+                        true;
+
+                client.sendMessage(message, argsRequired);
+            } else {
+                clientTerminal.append("SYSTEM: Please connect to a server before sending a message.\n");
             }
-
-            boolean argsRequired = command.equalsIgnoreCase("shake") ||
-                    command.equalsIgnoreCase("clear") ||
-                    command.equalsIgnoreCase("disconnect")
-                    ?
-                    false
-                    :
-                    true;
-
-            client.sendMessage(message, argsRequired);
         }
     }//GEN-LAST:event_sendMessageButtonActionPerformed
 
@@ -574,10 +580,14 @@ public class ClientGUI extends javax.swing.JFrame {
 
     private void pinsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pinsButtonActionPerformed
         if (evt.getActionCommand().equals("GetAllPins")) {
-            String[] message = new String[2];
-            message[0] = "GET";
-            message[1] = "PINS";
-            client.sendMessage(message, true);
+            if (client.isConnected()) {
+                String[] message = new String[2];
+                message[0] = "GET";
+                message[1] = "PINS";
+                client.sendMessage(message, true);
+            } else {
+                clientTerminal.append("SYSTEM: Please connect to a server before sending a message.\n");
+            }
         }
     }//GEN-LAST:event_pinsButtonActionPerformed
 
