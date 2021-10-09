@@ -46,13 +46,9 @@ public class Board {
             return command;
         } else if (command.equals("GET")) {
             String color = aArgs.length >= 2 ? aArgs[1].substring("color=".length()) : "";
-            String[] contains = new String[2];
-            if (aArgs.length >= 3) {
-                if (aArgs[2].contains("contains=")) {
-                    contains = aArgs[2].substring("contains=".length()).split(" ");
-                } else {
-                    contains = new String[]{"-1", "-1"};
-                }
+            String[] contains = new String[]{"-1","-1"};
+            if (aArgs.length >= 3 && aArgs[2].contains("contains=")) {
+                contains = aArgs[2].substring("contains=".length()).split(" ");
             }
             int x = Integer.parseInt(contains[0]);
             int y = Integer.parseInt(contains[1]);
