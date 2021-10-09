@@ -17,10 +17,11 @@ public class Board {
         this.height = height;
         this.colors = Arrays.asList(colors);
     }
-    public String inputParser(String[] args){
-        if (args == null) return "Welcome";
+    public String inputParser(String args){
+        String[] aArgs = args.split(" ");
+        if (args.isEmpty()) return "Welcome";
 
-        if (args[0].equals("DISCONNECT")) return args[0];
+        if (aArgs[0].equals("DISCONNECT")) return aArgs[0];
 
         return "Error";
     }

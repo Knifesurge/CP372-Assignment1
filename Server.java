@@ -60,12 +60,12 @@ public class Server {
             System.out.println("Sending welcome message: \n" + welcomeMessage);
             out.println(welcomeMessage);
 
-            String Inline, Outline;
+            String inLine, Outline;
             Outline = int_board.inputParser(null);
             out.println(Outline);
             try {
-                while ((Inline = in.readLine())!= null){
-                    Outline = int_board.inputParser(null);
+                while ((inLine = in.readLine())!= null){
+                    Outline = int_board.inputParser(inLine);
                     out.println(Outline);
                     if (Outline.equals("DISCONNECT")) break;
                 }
