@@ -19,7 +19,11 @@ public class Server {
         Board board = new Board(Integer.parseInt(argv[1]),Integer.parseInt(argv[2]),Arrays.copyOfRange(argv,3,argv.length));
         while (true){
             Socket c_socket = socket.accept();
-            
+
+            String clientIP = c_socket.getInetAddress().getHostAddress();
+            int clientPort = c_socket.getPort();
+            System.out.println("[+] New connection from: " + clientIP+":"+clientPort);
+
             BoardRunner request = new BoardRunner(board, c_socket);
 
             Thread thread = new Thread(request);
@@ -27,7 +31,7 @@ public class Server {
             thread.start();
         }
     }
-    
+
     private static class BoardRunner implements Runnable{
         private Socket Int_socket = null;
         private Board int_board = null; 
