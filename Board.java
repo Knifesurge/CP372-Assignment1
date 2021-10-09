@@ -70,12 +70,12 @@ public class Board {
             String message = "";
             for (int i = 6; i < aArgs.length; i++) {
                 if (i != aArgs.length - 1)
-                    message += aArgs[i];
-                else
                     message += aArgs[i] + " ";
+                else
+                    message += aArgs[i];
             }
             outMsg = "";
-
+            System.out.println("Message: " + message);
             boolean added = addNote(x, y, w, h, color, message);
             if (added) outMsg += "Note added.";
             else outMsg += "Note not added. Please try again.";
