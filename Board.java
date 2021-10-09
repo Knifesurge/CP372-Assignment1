@@ -47,6 +47,9 @@ public class Board {
                     outMsg += p.toString();
                     outMsg += "\n";
                 }
+                if (pins.isEmpty()) {
+                    outMsg = "No Pins found.";
+                }
             } else {
                 // Getting some notes, process the filters/arguments
                 String color = aArgs.length >= 2 ? aArgs[1].substring("color=".length()) : "";
@@ -70,6 +73,9 @@ public class Board {
                     System.out.println("Adding note.." + n.toString());
                     outMsg += n.toString();
                     outMsg += "\n";
+                }
+                if (notes.isEmpty()) {
+                    outMsg = "No Notes found.";
                 }
             }
         } else if (command.equals("POST")) {
