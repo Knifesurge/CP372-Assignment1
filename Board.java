@@ -53,6 +53,7 @@ public class Board {
             ArrayList<Note> notes = filterNotes(color, new String(x+" "+y), refersTo);
             outMsg = "";
             for (Note n : notes) {
+                System.out.println("Adding note.." + n.toString());
                 outMsg += n.toString();
                 outMsg += "\n";
             }
