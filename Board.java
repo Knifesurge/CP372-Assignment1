@@ -32,7 +32,7 @@ public class Board {
         for (String s : splitArgs)
             if (!s.isEmpty() && !s.equals("null"))
                 temp.add(s);
-        
+
         String[] aArgs = temp.toArray(new String[0]);
         String command = aArgs[0];
 
@@ -46,7 +46,10 @@ public class Board {
             }
             int x = Integer.parseInt(contains[0]);
             int y = Integer.parseInt(contains[1]);
-            String refersTo = aArgs.length >= 4 ? aArgs[3].substring("refersTo=".length()) : "";
+            String refersTo = "";
+            if (aArgs.length >= 4 && aArgs[3].contains("refersTo="))
+                refersTo = aArgs[3].substring("refersTo=".length());
+            System.out.println("refersTo="+refersTo);
             ArrayList<Note> notes;
             if (x == -1 || y == -1)
                 notes = filterNotes(color, "", refersTo);
