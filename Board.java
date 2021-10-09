@@ -30,7 +30,7 @@ public class Board {
         // Attempt to remove the null values
         ArrayList<String> temp = new ArrayList<String>();
         for (String s : splitArgs) {
-            if (!s.isEmpty() && s != null || !s.equals("null"))
+            if (!s.isEmpty() && (s != null || !s.equals("null")))
                 temp.add(s);
         }
         String[] aArgs = temp.toArray(new String[0]);
