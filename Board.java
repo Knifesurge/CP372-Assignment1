@@ -32,6 +32,10 @@ public class Board {
                 .toArray(String[]::new);
         String command = aArgs[0];
 
+        for (String s : aArgs) {
+            System.out.println(">> " + s);
+        }
+
         if (command.equals("DISCONNECT")) {
             return command;
         } else if (command.equals("GET")) {
