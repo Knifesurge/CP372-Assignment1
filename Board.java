@@ -39,11 +39,11 @@ public class Board {
         if (command.equals("DISCONNECT")) {
             return command;
         } else if (command.equals("GET")) {
-            String color = aArgs.length >= 2 ? aArgs[1].substring("color=".length()) : "";
-            String[] contains = aArgs.length >= 3 ? aArgs[2].substring("contains=".length()).split(" ") : new String[]{"-1","-1"};
+            String color = aArgs[1] != null ? aArgs[1].substring("color=".length()) : "";
+            String[] contains = aArgs[2] != null ? aArgs[2].substring("contains=".length()).split(" ") : new String[]{"-1","-1"};
             int x = Integer.parseInt(contains[0]);
             int y = Integer.parseInt(contains[1]);
-            String refersTo = aArgs.length >= 4 ? aArgs[3].substring("refersTo=".length()) : "";
+            String refersTo = aArgs[4] != null ? aArgs[3].substring("refersTo=".length()) : "";
             ArrayList<Note> notes = filterNotes(color, new String(x+" "+y), refersTo);
             outMsg = "";
             for (Note n : notes) {
