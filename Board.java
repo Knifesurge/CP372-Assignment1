@@ -34,6 +34,7 @@ public class Board {
                 temp.add(s);
 
         String[] aArgs = temp.toArray(new String[0]);
+        for (String s : aArgs) System.out.println(s);
         String command = aArgs[0];
 
         if (command.equals("DISCONNECT")) {
