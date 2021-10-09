@@ -28,7 +28,7 @@ public class Board {
         String outMsg = "ERROR";
         String[] splitArgs = args.split(" ");
         String[] aArgs = Arrays.stream(splitArgs)
-                .filter(s -> (s != null))
+                .filter(Objects::nonNull)
                 .toArray(String[]::new);
         String command = aArgs[0];
 
