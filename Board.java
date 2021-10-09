@@ -19,42 +19,54 @@ public class Board {
         this.colors = Arrays.asList(colors);
     }
 
-    
+
     public String inputParser(String args){
         if (args == null) return "Welcome";
 
         String outMsg = "ERROR";
         String[] aArgs = args.split(" ");
         String command = aArgs[0];
-        int x = Integer.parseInt(aArgs[1]);
-        int y = Integer.parseInt(aArgs[2]);
-        int w = Integer.parseInt(aArgs[3]);
-        int h = Integer.parseInt(aArgs[4]);
-        String color = aArgs[5];
-        StringBuilder message = new StringBuilder();
-        for (String s : Arrays.copyOfRange(aArgs, 6, aArgs.length)) {
-            message.append(s+" ");
-        }
 
         if (command.equals("DISCONNECT")) {
             return command;
         } else if (command.equals("GET")) {
-            ArrayList<Note> notes = filterNotes(color, new String(x+" "+y), message.toString());
+            String color = aArgs[1].substring("color=".length());
+            String[] contains = aArgs[2].substring("contains=".length()).split(" ");
+            int x = Integer.parseInt(contains[0]);
+            int y = Integer.parseInt(contains[1]);
+            String refersTo = aArgs[3].substring("refersTo=".length());
+            ArrayList<Note> notes = filterNotes(color, new String(x+" "+y), refersTo);
             outMsg = "";
             for (Note n : notes) {
                 outMsg += n.toString();
+                outMsg += "\n";
             }
         } else if (command.equals("POST")) {
+            int x = Integer.parseInt(aArgs[1]);
+            int y = Integer.parseInt(aArgs[2]);
+            int w = Integer.parseInt(aArgs[3]);
+            int h = Integer.parseInt(aArgs[4]);
+            String color = aArgs[5];
+            String message = aArgs[6];
             outMsg = "";
+
             boolean added = addNote(x, y, w, h, color, message.toString());
             if (added) outMsg += "Note added.";
             else outMsg += "Note not added. Please try again.";
         } else if (command.equals("PIN")) {
+            String[] coords = aArgs[1].split(",");
+            int x = Integer.parseInt(coords[0]);
+            int y = Integer.parseInt(coords[1]);
+
             outMsg = "";
             boolean pinned = pin(x, y);
             if (pinned) outMsg += "Pin added.";
             else outMsg += "Pin not added. Please try again.";
         } else if (command.equals("UNPIN")) {
+            String[] coords = aArgs[1].split(",");
+            int x = Integer.parseInt(coords[0]);
+            int y = Integer.parseInt(coords[1]);
+
             outMsg = "";
             boolean unpinned = unpin(x, y);
             if (unpinned) outMsg += "Pin removed.";

@@ -385,7 +385,7 @@ public class ClientGUI extends javax.swing.JFrame {
             String command = (String) commandSelection.getSelectedItem();
             String[] message = new String[7];
             
-            String color = argOption1TextField.getText().equals("color") ? "" : argOption1TextField.getText();
+            String color = argOption1TextField.getText().equals("color") ? "all" : argOption1TextField.getText();
             int x = 
                     xTextField.getText().equals("x") || xTextField.getText().isBlank() 
                     ? -1 
@@ -405,14 +405,24 @@ public class ClientGUI extends javax.swing.JFrame {
                         ""
                     :
                         referstoTextField.getText();
-            
+
             message[0] = command;
-            message[1] = String.valueOf(x);
-            message[2] = String.valueOf(y);
-            message[3] = String.valueOf(w);
-            message[4] = String.valueOf(h);
-            message[5] = color;
-            message[6] = content;
+
+            // Any unused spaces in array will be null value
+            if (command.equals("GET")) {
+                message[1] = "color="+color;
+                message[2] = "contains="+x+" "+y;
+                message[3] = "refersTo="+content;
+            } else if (command.equals("POST")) {
+                message[1] = String.valueOf(x);
+                message[2] = String.valueOf(y);
+                message[3] = String.valueOf(w);
+                message[4] = String.valueOf(h);
+                message[5] = color;
+                message[6] = content;
+            } else if (command.equals("PIN") || command.equals("UNPIN")) {
+                message[1] = x+","+y;
+            }
 
             boolean argsRequired = command.equalsIgnoreCase("shake") ||
                     command.equalsIgnoreCase("clear") ||
