@@ -211,14 +211,20 @@ public class Board {
 
     public synchronized ArrayList<Note> filterNotes(String color, String contains, String refersTo) {
         ArrayList<Note> fnotes = new ArrayList<Note>();
-        // Get the coords out of the string
-        String[] containsTmp = contains.split(" ");
-        int x = Integer.parseInt(containsTmp[0]);
-        int y = Integer.parseInt(containsTmp[1]);
         // Only filter on filters that are present
         boolean fColor = color.isEmpty() ? false : true;
         boolean fContains = contains.isEmpty() ? false : true;
         boolean fRefersTo = refersTo.isEmpty() ? false : true;
+
+        int x = -1;
+        int y = -1;
+
+        // Get the coords out of the string if present
+        if (fContains) {
+            String[] containsTmp = contains.split(" ");
+            x = Integer.parseInt(containsTmp[0]);
+            y = Integer.parseInt(containsTmp[1]);
+        }
 
         // Checks which filters are present and filters the notes accordingly.
         // The filtered Notes are then added to the fnotes List above, to be returned to the caller.
