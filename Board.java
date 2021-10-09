@@ -27,9 +27,13 @@ public class Board {
 
         String outMsg = "ERROR";
         String[] splitArgs = args.split(" ");
-        String[] aArgs = Arrays.stream(splitArgs)
-                .filter(Objects::nonNull)
-                .toArray(String[]::new);
+        String[] temp = new String[splitArgs.length];
+        int i = 0;
+        for (String s : splitArgs) {
+            if (s != null || !s.isEmpty())
+                temp[i++] = s;
+        }
+        String[] aArgs = Arrays.copyOf(temp, i);
         String command = aArgs[0];
 
         for (String s : aArgs) {
