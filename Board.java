@@ -29,18 +29,12 @@ public class Board {
         String[] splitArgs = args.split(" ");
         // Attempt to remove the null values
         ArrayList<String> temp = new ArrayList<String>();
-        for (String s : splitArgs) {
-            if (!s.isEmpty() && !s.equals("null")) {
-                System.out.println("Adding " + s + " to temp");
+        for (String s : splitArgs)
+            if (!s.isEmpty() && !s.equals("null"))
                 temp.add(s);
-            }
-        }
+        
         String[] aArgs = temp.toArray(new String[0]);
         String command = aArgs[0];
-
-        for (String s : aArgs) {
-            System.out.println(">> " + s);
-        }
 
         if (command.equals("DISCONNECT")) {
             return command;
