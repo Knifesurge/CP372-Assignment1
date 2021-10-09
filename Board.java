@@ -27,13 +27,13 @@ public class Board {
 
         String outMsg = "ERROR";
         String[] splitArgs = args.split(" ");
-        String[] temp = new String[splitArgs.length];
-        int i = 0;
+        // Attempt to remove the null values
+        ArrayList<String> temp = new ArrayList<String>();
         for (String s : splitArgs) {
-            if (s != null || !s.isEmpty())
-                temp[i++] = s;
+            if (!s.isEmpty() && s != null)
+                temp.add(s);
         }
-        String[] aArgs = Arrays.copyOf(temp, i);
+        String[] aArgs = temp.toArray(new String[0]);
         String command = aArgs[0];
 
         for (String s : aArgs) {
