@@ -57,13 +57,14 @@ public class Board {
                 String[] contains = new String[]{"-1", "-1"};
                 if (aArgs.length >= 3 && aArgs[2].contains("contains=")) {
                     contains = aArgs[2].substring("contains=".length()).split(" ");
+                    contains[1] = aArgs[3]; // Second coord will be in the next spot
                 }
                 for (String s : contains) System.out.println(s);
                 int x = Integer.parseInt(contains[0]);
                 int y = Integer.parseInt(contains[1]);
                 String refersTo = "";
-                if (aArgs.length >= 4 && aArgs[3].contains("refersTo="))
-                    refersTo = aArgs[3].substring("refersTo=".length());
+                if (aArgs.length >= 5 && aArgs[4].contains("refersTo="))
+                    refersTo = aArgs[4].substring("refersTo=".length());
                 System.out.println("refersTo=" + refersTo);
                 ArrayList<Note> notes;
                 if (x == -1 || y == -1)
