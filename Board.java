@@ -254,6 +254,10 @@ public class Board {
                     );
                 }
             } else if (fContains) {
+                // Get the coords out of the string
+                String[] containsTmp = contains.split(" ");
+                int x = Integer.parseInt(containsTmp[0]);
+                int y = Integer.parseInt(containsTmp[1]);
                 if (fRefersTo) {
                     fnotes.addAll(
                             notes.stream()
