@@ -67,7 +67,9 @@ public class Board {
             int w = Integer.parseInt(aArgs[3]);
             int h = Integer.parseInt(aArgs[4]);
             String color = aArgs[5];
-            String message = aArgs[6];
+            String message = "";
+            for (int i = 6; i < aArgs.length; i++)
+                message += aArgs[i];
             outMsg = "";
 
             boolean added = addNote(x, y, w, h, color, message.toString());
