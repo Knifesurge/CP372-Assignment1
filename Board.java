@@ -189,7 +189,7 @@ public class Board {
             // Check if Pin falls on any Notes, keep reference of these Notes
             ArrayList<Note> pinnedNotes = new ArrayList<Note>();
             for (Note n : notes) {
-                if (checkBounds(x, y, 0, 0, n.getX(), n.getY(), n.getWidth(), n.getHeight())) {
+                if (checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(), x, y, 0, 0)) {
                     // Pin within bounds of this Note, add to list
                     pinnedNotes.add(n);
                     // Pin the Note
