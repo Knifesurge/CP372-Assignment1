@@ -57,6 +57,7 @@ public class Board {
                 if (aArgs.length >= 3 && aArgs[2].contains("contains=")) {
                     contains = aArgs[2].substring("contains=".length()).split(" ");
                 }
+                for (String s : contains) System.out.println(s);
                 int x = Integer.parseInt(contains[0]);
                 int y = Integer.parseInt(contains[1]);
                 String refersTo = "";
