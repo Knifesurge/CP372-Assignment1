@@ -343,7 +343,7 @@ public class Board {
             }
         } else if (fRefersTo) {
             fnotes.addAll(
-                    notes.stream()
+                    fnotes2.stream()
                             .filter(n -> n.getMessage().contains(refersTo)
                             ).collect(Collectors.toList())
             );
