@@ -46,9 +46,12 @@ public class Server {
         private BufferedReader in = null;
 
         private void broadcastMessage(String msg) {
+            String tmp = msg;
+            msg = "SERVER>> " + tmp;
             for (BoardRunner br : Server.allClients) {
                 //if (this != br) // Don't send to ourselves
-                    br.sendMessage("SERVER>> "+msg);
+                System.out.println("Broadcasting:\n" + msg + "\nto:\n" + br.int_socket.getInetAddress().getHostAddress());
+                    br.sendMessage(msg);
             }
         }
 
@@ -87,10 +90,13 @@ public class Server {
                 while ((inLine = in.readLine())!= null){
                     System.out.println("Client: " + inLine);
                     Outline = int_board.inputParser(inLine);
+                    //out.println(Outline);
                     sendMessage(Outline);
                     if (Outline.equals("DISCONNECT")) {
                         sendMessage("Goodbye.");
                         int_socket.close();
+                        // Remove ourselves from the server list
+                        Server.allClients.remove(this);
                     } else if(Outline.startsWith("PIN") ||
                             Outline.startsWith("UNPIN") ||
                             Outline.startsWith("POST")  ||
