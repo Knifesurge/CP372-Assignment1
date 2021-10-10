@@ -35,7 +35,7 @@ public class Board {
                 temp.add(s);
 
         String[] aArgs = temp.toArray(new String[0]);
-        for (String s : aArgs) System.out.println(s);
+        //for (String s : aArgs) System.out.println(s);
         String command = aArgs[0];
 
         if (command.equals("DISCONNECT")) {
@@ -64,12 +64,30 @@ public class Board {
                 int x = Integer.parseInt(contains[0]);
                 int y = Integer.parseInt(contains[1]);
                 String refersTo = "";
-                // Check if contains not present, location of refersTo different
-                if (aArgs.length >= 3 && x == -1 && y == -1)
-                    refersTo = aArgs[2].substring("refersTo=".length());
-                else if (aArgs.length >= 5 && aArgs[4].contains("refersTo="))
-                    refersTo = aArgs[4].substring("refersTo=".length());
-                System.out.println("refersTo--\t" + refersTo);
+
+                // Check what args are present and set refersTo accordingly
+                if (color.equals("all")) {  // color=all
+                    if (x == -1 && y == -1) {   // contains not present
+                        if (aArgs.length == 3) {    // refersTo present
+                            refersTo = aArgs[2].substring("refersTo=".length());
+                        }
+                    } else {    // Contains present
+                        if (aArgs.length == 5) {    // refersTo present
+                            refersTo = aArgs[4].substring("refersTo=".length());
+                        }
+                    }
+                } else {    // color=color
+                    if (x == -1 && y == -1) {   // contains not present
+                        if (aArgs.length == 4) {    // refersTo present
+                            refersTo = aArgs[3].substring("refersTo-".length());
+                        }
+                    } else {    // Contains present
+                        if (aArgs.length == 6) {    // refersTo present
+                            refersTo = aArgs[5].substring("refersTo=".length());
+                        }
+                    }
+                }
+                //System.out.println("refersTo--\t" + refersTo);
                 ArrayList<Note> notes;
                 if (x == -1 || y == -1)
                     notes = filterNotes(color, "", refersTo);
@@ -250,6 +268,7 @@ public class Board {
         ArrayList<Note> fnotes = new ArrayList<Note>();
         ArrayList<Note> fnotes2 = new ArrayList<Note>();
         ArrayList<Note> fnotes3 = new ArrayList<Note>();
+      
         System.out.println("Color: " + color);
         System.out.println("Contains: " + contains);
         System.out.println("RefersTo: " + refersTo);
@@ -259,95 +278,6 @@ public class Board {
         boolean fContains = contains.isEmpty() ? false : true;
         boolean fRefersTo = refersTo.isEmpty() ? false : true;
 
-        // Checks which filters are present and filters the notes accordingly.
-        // The filtered Notes are then added to the fnotes List above, to be returned to the caller.
-        // Any suggestions on how to do this without this big branch would be welcomed :)
-        /*if (fColor) {
-            if (fContains) {
-                // Get the coords out of the string
-                String[] containsTmp = contains.split(" ");
-                int x = Integer.parseInt(containsTmp[0]);
-                int y = Integer.parseInt(containsTmp[1]);
-                if (fRefersTo) {
-                    if (color.equals("all"))
-                        fnotes.addAll(
-                                notes.stream()
-                                        .filter(n -> checkBounds(x, y, 0, 0,
-                                                n.getX(), n.getY(), n.getWidth(), n.getHeight()) &&
-                                                n.getMessage().contains(refersTo)
-                                        ).collect(Collectors.toList())
-                        );
-                    else
-                        fnotes.addAll(
-                                notes.stream()
-                                        .filter(n -> n.getColor().equals(color) &&
-                                                checkBounds(x, y, 0, 0,
-                                                        n.getX(), n.getY(), n.getWidth(), n.getHeight()) &&
-                                                n.getMessage().contains(refersTo)
-                                        ).collect(Collectors.toList())
-                        );
-                } else {
-                    fnotes.addAll(
-                            notes.stream()
-                                    .filter(n -> checkBounds(x, y, 0, 0,
-                                            n.getX(), n.getY(), n.getWidth(), n.getHeight())
-                                    ).collect(Collectors.toList())
-                    );
-                }
-            } else if (fRefersTo) {
-                if (color.equals("all"))
-                    fnotes.addAll(
-                            notes.stream()
-                                    .filter(n -> n.getMessage().contains(refersTo)
-                                    ).collect(Collectors.toList())
-                    );
-                else
-                    fnotes.addAll(
-                            notes.stream()
-                                    .filter(n -> n.getColor().equals(color) &&
-                                            n.getMessage().contains(refersTo)
-                                    ).collect(Collectors.toList())
-                    );
-            } else {
-                if (color.equals("all"))
-                    fnotes.addAll(getNotes());
-                else
-                    fnotes.addAll(
-                            notes.stream()
-                                    .filter(n -> n.getColor().equals(color)
-                                    ).collect(Collectors.toList())
-                    );
-            }
-        } else if (fContains) {
-            // Get the coords out of the string
-            String[] containsTmp = contains.split(" ");
-            int x = Integer.parseInt(containsTmp[0]);
-            int y = Integer.parseInt(containsTmp[0]);
-            if (fRefersTo) {
-                fnotes.addAll(
-                        notes.stream()
-                                .filter(n -> checkBounds(x, y, 0, 0,
-                                        n.getX(), n.getY(), n.getWidth(), n.getHeight()) &&
-                                        n.getMessage().contains(refersTo)
-                                ).collect(Collectors.toList())
-                );
-            } else {
-                fnotes.addAll(
-                        notes.stream()
-                                .filter(n -> checkBounds(x, y, 0, 0,
-                                        n.getX(), n.getY(), n.getWidth(), n.getHeight())
-                                ).collect(Collectors.toList())
-                );
-            }
-        } else if (fRefersTo) {
-            fnotes.addAll(
-                    notes.stream()
-                            .filter(n -> n.getMessage().contains(refersTo)
-                            ).collect(Collectors.toList())
-            );
-        } else {
-            fnotes.addAll(notes);
-        }*/
         if ((!fColor || color.equals("all")) && !fContains && !fRefersTo) return notes;
         if (fColor && !color.equals("all")){
             fnotes3.addAll(
@@ -410,8 +340,15 @@ public class Board {
                             .filter(n -> n.getMessage().contains(refersTo)
                             ).collect(Collectors.toList())
             );
-                
             }
+        } else if (fRefersTo) {
+            fnotes.addAll(
+                    notes.stream()
+                            .filter(n -> n.getMessage().contains(refersTo)
+                            ).collect(Collectors.toList())
+            );
+        } else {
+            fnotes.addAll(notes);
         }
         return fnotes;
     }
