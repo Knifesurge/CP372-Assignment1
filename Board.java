@@ -276,6 +276,13 @@ public class Board {
                                                 n.getMessage().contains(refersTo)
                                         ).collect(Collectors.toList())
                         );
+                } else {
+                    fnotes.addAll(
+                            notes.stream()
+                                    .filter(n -> checkBounds(x, y, 0, 0,
+                                            n.getX(), n.getY(), n.getWidth(), n.getHeight())
+                                    ).collect(Collectors.toList())
+                    );
                 }
             } else if (fRefersTo) {
                 if (color.equals("all"))
