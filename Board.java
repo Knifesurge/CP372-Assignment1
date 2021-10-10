@@ -35,7 +35,7 @@ public class Board {
                 temp.add(s);
 
         String[] aArgs = temp.toArray(new String[0]);
-        for (String s : aArgs) System.out.println(s);
+        //for (String s : aArgs) System.out.println(s);
         String command = aArgs[0];
 
         if (command.equals("DISCONNECT")) {
@@ -86,14 +86,7 @@ public class Board {
                         }
                     }
                 }
-                /*
-                if (aArgs.length == 3 && x == -1 && y == -1)
-                    refersTo = aArgs[2].substring("refersTo=".length());
-                else if (aArgs.length == 5 && aArgs[4].contains("refersTo="))
-                    refersTo = aArgs[4].substring("refersTo=".length());
-
-                 */
-                System.out.println("refersTo--\t" + refersTo);
+                //System.out.println("refersTo--\t" + refersTo);
                 ArrayList<Note> notes;
                 if (x == -1 || y == -1)
                     notes = filterNotes(color, "", refersTo);
