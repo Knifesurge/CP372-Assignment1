@@ -69,7 +69,7 @@ public class Board {
                     refersTo = aArgs[2].substring("refersTo=".length());
                 else if (aArgs.length >= 5 && aArgs[4].contains("refersTo="))
                     refersTo = aArgs[4].substring("refersTo=".length());
-                //System.out.println("refersTo=" + refersTo);
+                System.out.println("refersTo--\t" + refersTo);
                 ArrayList<Note> notes;
                 if (x == -1 || y == -1)
                     notes = filterNotes(color, "", refersTo);
