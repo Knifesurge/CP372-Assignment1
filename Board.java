@@ -262,8 +262,8 @@ public class Board {
                     if (color.equals("all"))
                         fnotes.addAll(
                                 notes.stream()
-                                        .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
-                                                        x, y, 0, 0) &&
+                                        .filter(n -> checkBounds(x, y, 0, 0,
+                                                n.getX(), n.getY(), n.getWidth(), n.getHeight()) &&
                                                 n.getMessage().contains(refersTo)
                                         ).collect(Collectors.toList())
                         );
@@ -271,8 +271,8 @@ public class Board {
                         fnotes.addAll(
                                 notes.stream()
                                         .filter(n -> n.getColor().equals(color) &&
-                                                checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
-                                                        x, y, 0, 0) &&
+                                                checkBounds(x, y, 0, 0,
+                                                        n.getX(), n.getY(), n.getWidth(), n.getHeight()) &&
                                                 n.getMessage().contains(refersTo)
                                         ).collect(Collectors.toList())
                         );
@@ -309,16 +309,16 @@ public class Board {
             if (fRefersTo) {
                 fnotes.addAll(
                         notes.stream()
-                                .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
-                                        x, y, 0, 0) &&
+                                .filter(n -> checkBounds(x, y, 0, 0,
+                                        n.getX(), n.getY(), n.getWidth(), n.getHeight()) &&
                                         n.getMessage().contains(refersTo)
                                 ).collect(Collectors.toList())
                 );
             } else {
                 fnotes.addAll(
                         notes.stream()
-                                .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
-                                        x, y, 0, 0)
+                                .filter(n -> checkBounds(x, y, 0, 0,
+                                        n.getX(), n.getY(), n.getWidth(), n.getHeight())
                                 ).collect(Collectors.toList())
                 );
             }
