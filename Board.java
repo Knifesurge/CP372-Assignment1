@@ -65,7 +65,7 @@ public class Board {
                 int y = Integer.parseInt(contains[1]);
                 String refersTo = "";
                 // Check if contains not present, location of refersTo different
-                if (x == -1 && y == -1)
+                if (aArgs.length >= 3 && x == -1 && y == -1)
                     refersTo = aArgs[2].substring("refersTo=".length());
                 else if (aArgs.length >= 5 && aArgs[4].contains("refersTo="))
                     refersTo = aArgs[4].substring("refersTo=".length());
