@@ -252,17 +252,22 @@ public class Board {
         // Checks which filters are present and filters the notes accordingly.
         // The filtered Notes are then added to the fnotes List above, to be returned to the caller.
         // Any suggestions on how to do this without this big branch would be welcomed :)
-        if (color.equals("all")){
-            // Requesting all colors, which is really just all notes
-            fnotes.addAll(getNotes());
-        } else {
-            if (fColor) {
-                if (fContains) {
-                    // Get the coords out of the string
-                    String[] containsTmp = contains.split(" ");
-                    int x = Integer.parseInt(containsTmp[0]);
-                    int y = Integer.parseInt(containsTmp[1]);
-                    if (fRefersTo) {
+        if (fColor) {
+            if (fContains) {
+                // Get the coords out of the string
+                String[] containsTmp = contains.split(" ");
+                int x = Integer.parseInt(containsTmp[0]);
+                int y = Integer.parseInt(containsTmp[1]);
+                if (fRefersTo) {
+                    if (color.equals("all"))
+                        fnotes.addAll(
+                                notes.stream()
+                                        .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
+                                                        x, y, 0, 0) &&
+                                                n.getMessage().contains(refersTo)
+                                        ).collect(Collectors.toList())
+                        );
+                    else
                         fnotes.addAll(
                                 notes.stream()
                                         .filter(n -> n.getColor().equals(color) &&
@@ -271,51 +276,60 @@ public class Board {
                                                 n.getMessage().contains(refersTo)
                                         ).collect(Collectors.toList())
                         );
-                    }
-                } else if (fRefersTo) {
+                }
+            } else if (fRefersTo) {
+                if (color.equals("all"))
+                    fnotes.addAll(
+                            notes.stream()
+                                    .filter(n -> n.getMessage().contains(refersTo)
+                                    ).collect(Collectors.toList())
+                    );
+                else
                     fnotes.addAll(
                             notes.stream()
                                     .filter(n -> n.getColor().equals(color) &&
                                             n.getMessage().contains(refersTo)
                                     ).collect(Collectors.toList())
                     );
-                } else {
+            } else {
+                if (color.equals("all"))
+                    fnotes.addAll(getNotes());
+                else
                     fnotes.addAll(
                             notes.stream()
                                     .filter(n -> n.getColor().equals(color)
                                     ).collect(Collectors.toList())
                     );
-                }
-            } else if (fContains) {
-                // Get the coords out of the string
-                String[] containsTmp = contains.split(" ");
-                int x = Integer.parseInt(containsTmp[0]);
-                int y = Integer.parseInt(containsTmp[0]);
-                if (fRefersTo) {
-                    fnotes.addAll(
-                            notes.stream()
-                                    .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
-                                            x, y, 0, 0) &&
-                                            n.getMessage().contains(refersTo)
-                                    ).collect(Collectors.toList())
-                    );
-                } else {
-                    fnotes.addAll(
-                            notes.stream()
-                                    .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
-                                            x, y, 0, 0)
-                                    ).collect(Collectors.toList())
-                    );
-                }
-            } else if (fRefersTo) {
+            }
+        } else if (fContains) {
+            // Get the coords out of the string
+            String[] containsTmp = contains.split(" ");
+            int x = Integer.parseInt(containsTmp[0]);
+            int y = Integer.parseInt(containsTmp[0]);
+            if (fRefersTo) {
                 fnotes.addAll(
                         notes.stream()
-                                .filter(n -> n.getMessage().contains(refersTo)
+                                .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
+                                        x, y, 0, 0) &&
+                                        n.getMessage().contains(refersTo)
                                 ).collect(Collectors.toList())
                 );
             } else {
-                fnotes.addAll(notes);
+                fnotes.addAll(
+                        notes.stream()
+                                .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
+                                        x, y, 0, 0)
+                                ).collect(Collectors.toList())
+                );
             }
+        } else if (fRefersTo) {
+            fnotes.addAll(
+                    notes.stream()
+                            .filter(n -> n.getMessage().contains(refersTo)
+                            ).collect(Collectors.toList())
+            );
+        } else {
+            fnotes.addAll(notes);
         }
         return fnotes;
     }
