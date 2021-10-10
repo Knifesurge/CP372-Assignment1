@@ -45,7 +45,7 @@ public class Board {
                 outMsg = "";
                 ArrayList<Pin> pins = new ArrayList<Pin>(getPins());
                 for (Pin p : pins) {
-                    outMsg += p.toString()
+                    outMsg += p.toString();
                     outMsg += "\n";
                 }
                 if (pins.isEmpty()) {
