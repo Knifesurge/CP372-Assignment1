@@ -78,12 +78,12 @@ public class Board {
                     }
                 } else {    // color=color
                     if (x == -1 && y == -1) {   // contains not present
-                        if (aArgs.length == 4) {    // refersTo present
-                            refersTo = aArgs[3].substring("refersTo-".length());
+                        if (aArgs.length == 3) {    // refersTo present
+                            refersTo = aArgs[2].substring("refersTo-".length());
                         }
                     } else {    // Contains present
-                        if (aArgs.length == 6) {    // refersTo present
-                            refersTo = aArgs[5].substring("refersTo=".length());
+                        if (aArgs.length == 5) {    // refersTo present
+                            refersTo = aArgs[4].substring("refersTo=".length());
                         }
                     }
                 }
