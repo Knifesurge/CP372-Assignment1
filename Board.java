@@ -45,8 +45,9 @@ public class Board {
                 outMsg = "";
                 ArrayList<Pin> pins = new ArrayList<Pin>(getPins());
                 for (Pin p : pins) {
-                    outMsg += p.toString();
-                    outMsg += "\n";
+                    for (Note n : p.getPinnedNotes()){
+                    outMsg += n.toString();
+                    outMsg += "\n";}
                 }
                 if (pins.isEmpty()) {
                     outMsg = "No Pins found.";
@@ -219,11 +220,14 @@ public class Board {
             // Pin within the Board
             // Get the Pin at these coordinates
             Pin chosenPin = new Pin(-1, -1, null);
+            int i = 0;
             for (Pin pin : pins) {
                 if (pin.getX() == x && pin.getY() == y) {
                     chosenPin = pin;
+                    pins.remove(i);
                     break;
                 }
+                i++;
             }
             // Check if chosenPin valid
             if (chosenPin.getX() == -1 && chosenPin.getY() == -1)
