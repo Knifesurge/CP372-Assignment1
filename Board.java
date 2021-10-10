@@ -128,8 +128,8 @@ public class Board {
 
             outMsg = "";
             boolean pinned = pin(x, y);
-            if (pinned) outMsg += "Pin added.";
-            else outMsg += "Pin not added. Please try again.";
+            if (pinned) outMsg += "Pin at ("+x+", "+y+") added.";
+            else outMsg += "Pin at ("+x+", "+y+") not added. Please try again.";
         } else if (command.equals("UNPIN")) {
             String[] coords = aArgs[1].split(",");
             int x = Integer.parseInt(coords[0]);
@@ -137,8 +137,8 @@ public class Board {
 
             outMsg = "";
             boolean unpinned = unpin(x, y);
-            if (unpinned) outMsg += "Pin removed.";
-            else outMsg += "Pin not removed. Please try again.";
+            if (unpinned) outMsg += "Pin at ("+x+", "+y+") removed.";
+            else outMsg += "Pin at ("+x+", "+y+") not removed. Please try again.";
         } else if (command.equals("SHAKE")) {
             outMsg = "";
             boolean shaked = shake();

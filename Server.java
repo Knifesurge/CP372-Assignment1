@@ -91,6 +91,13 @@ public class Server {
                     if (Outline.equals("DISCONNECT")) {
                         sendMessage("Goodbye.");
                         int_socket.close();
+                    } else if(Outline.startsWith("PIN") ||
+                            Outline.startsWith("UNPIN") ||
+                            Outline.startsWith("POST")  ||
+                            Outline.startsWith("CLEAR") ||
+                            Outline.startsWith("SHAKE")
+                            ) {
+                        broadcastMessage(Outline);
                     }
                 }
             } catch (IOException e) {
