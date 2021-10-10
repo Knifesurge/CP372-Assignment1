@@ -183,7 +183,7 @@ public class Board {
      * @return true if Note added, false otherwise
      */
     public synchronized boolean addNote(int x, int y, int width, int height, String color, String message) {
-        if (checkBounds(x, y, width, height)) {
+        if (checkBounds(x, y, width, height) && colors.contains(color)) {
             Note note = new Note(x, y, width, height, color, message);
             notes.add(note);
             return true;

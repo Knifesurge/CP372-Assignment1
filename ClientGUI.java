@@ -400,7 +400,7 @@ public class ClientGUI extends javax.swing.JFrame {
                 String command = (String) commandSelection.getSelectedItem();
                 String[] message = new String[7];
 
-                String color = argOption1TextField.getText().equals("color") ? "all" : argOption1TextField.getText();
+                String color = argOption1TextField.getText().equals("color") ? "all" : argOption1TextField.getText().trim();
                 int x =
                         xTextField.getText().equals("x") || xTextField.getText().isBlank()
                                 ? -1
@@ -419,7 +419,7 @@ public class ClientGUI extends javax.swing.JFrame {
                         ?
                         ""
                         :
-                        referstoTextField.getText();
+                        referstoTextField.getText().trim();
 
                 message[0] = command;
 
