@@ -248,6 +248,8 @@ public class Board {
 
     public synchronized ArrayList<Note> filterNotes(String color, String contains, String refersTo) {
         ArrayList<Note> fnotes = new ArrayList<Note>();
+        ArrayList<Note> fnotes2 = new ArrayList<Note>();
+        ArrayList<Note> fnotes3 = new ArrayList<Note>();
         System.out.println("Color: " + color);
         System.out.println("Contains: " + contains);
         System.out.println("RefersTo: " + refersTo);
@@ -260,7 +262,7 @@ public class Board {
         // Checks which filters are present and filters the notes accordingly.
         // The filtered Notes are then added to the fnotes List above, to be returned to the caller.
         // Any suggestions on how to do this without this big branch would be welcomed :)
-        if (fColor) {
+        /*if (fColor) {
             if (fContains) {
                 // Get the coords out of the string
                 String[] containsTmp = contains.split(" ");
@@ -345,6 +347,71 @@ public class Board {
             );
         } else {
             fnotes.addAll(notes);
+        }*/
+        if ((!fColor || color.equals("all")) && !fContains && !fRefersTo) return notes;
+        if (fColor && !color.equals("all")){
+            fnotes3.addAll(
+                                notes.stream()
+                                        .filter(n -> n.getColor().equals(color)
+                                        ).collect(Collectors.toList())
+                        );
+        if (!fContains && !fRefersTo) return fnotes3;
+        }
+        if (fContains){
+            String[] containsTmp = contains.split(" ");
+                int x = Integer.parseInt(containsTmp[0]);
+                int y = Integer.parseInt(containsTmp[1]);
+            if (fnotes3.isEmpty()){
+                fnotes2.addAll(
+                                notes.stream()
+                                        .filter(n -> checkBounds(x, y, 0, 0,
+                                                n.getX(), n.getY(), n.getWidth(), n.getHeight())
+                                        ).collect(Collectors.toList())
+                        );
+            }
+            else{
+                fnotes2.addAll(
+                                fnotes3.stream()
+                                        .filter(n -> checkBounds(x, y, 0, 0,
+                                                n.getX(), n.getY(), n.getWidth(), n.getHeight())
+                                        ).collect(Collectors.toList())
+                        );
+            }
+            if (!fRefersTo) return fnotes2;
+        }
+        if(fRefersTo){
+            if(fnotes2.isEmpty() && fnotes3.isEmpty()){
+                fnotes.addAll(
+                    notes.stream()
+                            .filter(n -> n.getMessage().contains(refersTo)
+                            ).collect(Collectors.toList())
+            );
+            
+            }
+            else if(fnotes2.isEmpty()){
+                fnotes.addAll(
+                    fnotes3.stream()
+                            .filter(n -> n.getMessage().contains(refersTo)
+                            ).collect(Collectors.toList())
+            );
+                
+            }
+            else if(fnotes3.isEmpty()){
+                fnotes.addAll(
+                    fnotes2.stream()
+                            .filter(n -> n.getMessage().contains(refersTo)
+                            ).collect(Collectors.toList())
+            );   
+            
+            }
+            else {
+                fnotes.addAll(
+                    notes.stream()
+                            .filter(n -> n.getMessage().contains(refersTo)
+                            ).collect(Collectors.toList())
+            );
+                
+            }
         }
         return fnotes;
     }
