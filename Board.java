@@ -27,6 +27,7 @@ public class Board {
 
         String outMsg = "ERROR";
         String[] splitArgs = args.split(" ");
+        for (String s : splitArgs) System.out.println(s);
         // Attempt to remove the null values
         ArrayList<String> temp = new ArrayList<String>();
         for (String s : splitArgs)
@@ -45,9 +46,8 @@ public class Board {
                 outMsg = "";
                 ArrayList<Pin> pins = new ArrayList<Pin>(getPins());
                 for (Pin p : pins) {
-                    for (Note n : p.getPinnedNotes()){
-                    outMsg += n.toString();
-                    outMsg += "\n";}
+                    outMsg += p.toString();
+                    outMsg += "\n";
                 }
                 if (pins.isEmpty()) {
                     outMsg = "No Pins found.";
@@ -64,9 +64,36 @@ public class Board {
                 int x = Integer.parseInt(contains[0]);
                 int y = Integer.parseInt(contains[1]);
                 String refersTo = "";
-                if (aArgs.length >= 5 && aArgs[4].contains("refersTo="))
+                // Check what args are present and set refersTo accordingly
+                if (color.equals("all")) {  // color=all
+                    if (x == -1 && y == -1) {   // contains not present
+                        if (aArgs.length == 3) {    // refersTo present
+                            refersTo = aArgs[2].substring("refersTo=".length());
+                        }
+                    } else {    // Contains present
+                        if (aArgs.length == 5) {    // refersTo present
+                            refersTo = aArgs[4].substring("refersTo=".length());
+                        }
+                    }
+                } else {    // color=color
+                    if (x == -1 && y == -1) {   // contains not present
+                        if (aArgs.length == 4) {    // refersTo present
+                            refersTo = aArgs[3].substring("refersTo-".length());
+                        }
+                    } else {    // Contains present
+                        if (aArgs.length == 6) {    // refersTo present
+                            refersTo = aArgs[5].substring("refersTo=".length());
+                        }
+                    }
+                }
+                /*
+                if (aArgs.length == 3 && x == -1 && y == -1)
+                    refersTo = aArgs[2].substring("refersTo=".length());
+                else if (aArgs.length == 5 && aArgs[4].contains("refersTo="))
                     refersTo = aArgs[4].substring("refersTo=".length());
-                //System.out.println("refersTo=" + refersTo);
+
+                 */
+                System.out.println("refersTo--\t" + refersTo);
                 ArrayList<Note> notes;
                 if (x == -1 || y == -1)
                     notes = filterNotes(color, "", refersTo);
@@ -245,6 +272,10 @@ public class Board {
 
     public synchronized ArrayList<Note> filterNotes(String color, String contains, String refersTo) {
         ArrayList<Note> fnotes = new ArrayList<Note>();
+        System.out.println("Color: " + color);
+        System.out.println("Contains: " + contains);
+        System.out.println("RefersTo: " + refersTo);
+
         // Only filter on filters that are present
         boolean fColor = color.isEmpty() ? false : true;
         boolean fContains = contains.isEmpty() ? false : true;
@@ -253,70 +284,91 @@ public class Board {
         // Checks which filters are present and filters the notes accordingly.
         // The filtered Notes are then added to the fnotes List above, to be returned to the caller.
         // Any suggestions on how to do this without this big branch would be welcomed :)
-        if (color.equals("all")){
-            // Requesting all colors, which is really just all notes
-            fnotes.addAll(getNotes());
-        } else {
-            if (fColor) {
-                if (fContains) {
-                    // Get the coords out of the string
-                    String[] containsTmp = contains.split(" ");
-                    int x = Integer.parseInt(containsTmp[0]);
-                    int y = Integer.parseInt(containsTmp[1]);
-                    if (fRefersTo) {
+        if (fColor) {
+            if (fContains) {
+                // Get the coords out of the string
+                String[] containsTmp = contains.split(" ");
+                int x = Integer.parseInt(containsTmp[0]);
+                int y = Integer.parseInt(containsTmp[1]);
+                if (fRefersTo) {
+                    if (color.equals("all"))
                         fnotes.addAll(
                                 notes.stream()
-                                        .filter(n -> n.getColor().equals(color) &&
-                                                checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
-                                                        x, y, 0, 0) &&
+                                        .filter(n -> checkBounds(x, y, 0, 0,
+                                                n.getX(), n.getY(), n.getWidth(), n.getHeight()) &&
                                                 n.getMessage().contains(refersTo)
                                         ).collect(Collectors.toList())
                         );
-                    }
-                } else if (fRefersTo) {
+                    else
+                        fnotes.addAll(
+                                notes.stream()
+                                        .filter(n -> n.getColor().equals(color) &&
+                                                checkBounds(x, y, 0, 0,
+                                                        n.getX(), n.getY(), n.getWidth(), n.getHeight()) &&
+                                                n.getMessage().contains(refersTo)
+                                        ).collect(Collectors.toList())
+                        );
+                } else {
+                    fnotes.addAll(
+                            notes.stream()
+                                    .filter(n -> checkBounds(x, y, 0, 0,
+                                            n.getX(), n.getY(), n.getWidth(), n.getHeight())
+                                    ).collect(Collectors.toList())
+                    );
+                }
+            } else if (fRefersTo) {
+                if (color.equals("all"))
+                    fnotes.addAll(
+                            notes.stream()
+                                    .filter(n -> n.getMessage().contains(refersTo)
+                                    ).collect(Collectors.toList())
+                    );
+                else
                     fnotes.addAll(
                             notes.stream()
                                     .filter(n -> n.getColor().equals(color) &&
                                             n.getMessage().contains(refersTo)
                                     ).collect(Collectors.toList())
                     );
-                } else {
+            } else {
+                if (color.equals("all"))
+                    fnotes.addAll(getNotes());
+                else
                     fnotes.addAll(
                             notes.stream()
                                     .filter(n -> n.getColor().equals(color)
                                     ).collect(Collectors.toList())
                     );
-                }
-            } else if (fContains) {
-                // Get the coords out of the string
-                String[] containsTmp = contains.split(" ");
-                int x = Integer.parseInt(containsTmp[0]);
-                int y = Integer.parseInt(containsTmp[0]);
-                if (fRefersTo) {
-                    fnotes.addAll(
-                            notes.stream()
-                                    .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
-                                            x, y, 0, 0) &&
-                                            n.getMessage().contains(refersTo)
-                                    ).collect(Collectors.toList())
-                    );
-                } else {
-                    fnotes.addAll(
-                            notes.stream()
-                                    .filter(n -> checkBounds(n.getX(), n.getY(), n.getWidth(), n.getHeight(),
-                                            x, y, 0, 0)
-                                    ).collect(Collectors.toList())
-                    );
-                }
-            } else if (fRefersTo) {
+            }
+        } else if (fContains) {
+            // Get the coords out of the string
+            String[] containsTmp = contains.split(" ");
+            int x = Integer.parseInt(containsTmp[0]);
+            int y = Integer.parseInt(containsTmp[0]);
+            if (fRefersTo) {
                 fnotes.addAll(
                         notes.stream()
-                                .filter(n -> n.getMessage().contains(refersTo)
+                                .filter(n -> checkBounds(x, y, 0, 0,
+                                        n.getX(), n.getY(), n.getWidth(), n.getHeight()) &&
+                                        n.getMessage().contains(refersTo)
                                 ).collect(Collectors.toList())
                 );
             } else {
-                fnotes.addAll(notes);
+                fnotes.addAll(
+                        notes.stream()
+                                .filter(n -> checkBounds(x, y, 0, 0,
+                                        n.getX(), n.getY(), n.getWidth(), n.getHeight())
+                                ).collect(Collectors.toList())
+                );
             }
+        } else if (fRefersTo) {
+            fnotes.addAll(
+                    notes.stream()
+                            .filter(n -> n.getMessage().contains(refersTo)
+                            ).collect(Collectors.toList())
+            );
+        } else {
+            fnotes.addAll(notes);
         }
         return fnotes;
     }
@@ -391,8 +443,10 @@ public class Board {
                 && y2 >= 0
                 && w2 >= 0
                 && h2 >= 0
-                && (x1 + w1) < (x2 + w2)
-                && (y1 + h1) < (y2 + h2);
+                && x1 >= x2
+                && (x1 + w1) <= (x2 + w2)
+                && y1 >= y2
+                && (y1 + h1) <= (y2 + h2);
     }
 
     /**
