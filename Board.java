@@ -86,7 +86,7 @@ public class Board {
                         }
                     }
                 }
-                //System.out.println("refersTo--\t" + refersTo);
+                System.out.println("refersTo--\t" + refersTo);
                 ArrayList<Note> notes;
                 if (x == -1 || y == -1)
                     notes = filterNotes(color, "", refersTo);
