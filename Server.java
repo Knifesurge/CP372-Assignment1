@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.io.*;
 import java.io.IOException;
@@ -13,7 +15,11 @@ import java.net.Socket;
  */
 public class Server {
 
+    protected static List<BoardRunner> allClients;
+
     public static void main(String argv[]) throws IOException {
+        allClients = new ArrayList<BoardRunner>();
+
         int Port_number = Integer.parseInt(argv[0]);
         ServerSocket socket = new ServerSocket(Port_number);
         Board board = new Board(Integer.parseInt(argv[1]),Integer.parseInt(argv[2]),Arrays.copyOfRange(argv,3,argv.length));
@@ -25,6 +31,7 @@ public class Server {
             System.out.println("[+] New connection from: " + clientIP+":"+clientPort);
 
             BoardRunner request = new BoardRunner(board, c_socket);
+            allClients.add(request);
 
             Thread thread = new Thread(request);
 
@@ -34,13 +41,24 @@ public class Server {
 
     private static class BoardRunner implements Runnable{
         private Socket int_socket = null;
-        private Board int_board = null; 
+        private Board int_board = null;
+        private PrintWriter out = null;
+        private BufferedReader in = null;
+
+        private void broadcastMessage(String msg) {
+            for (BoardRunner br : Server.allClients) {
+                if (this == br) // Don't send to ourselves
+                    br.sendMessage(msg);
+            }
+        }
+
+        private void sendMessage(String msg) {
+            out.println(msg);
+        }
+
         @Override
         public void run() {
             // TODO Auto-generated method stub
-            PrintWriter out = null;
-            BufferedReader in = null;
-
             try {
                 out = new PrintWriter(int_socket.getOutputStream(),true);
             } catch (IOException e) {
@@ -58,18 +76,20 @@ public class Server {
             welcomeMessage.append(int_board.getWidth() + " " + int_board.getHeight() + "\n");
             int_board.getColors().forEach(c -> welcomeMessage.append(c + " "));
             System.out.println("Sending welcome message: \n" + welcomeMessage);
-            out.println(welcomeMessage);
+            //out.println(welcomeMessage);
+            sendMessage(welcomeMessage.toString());
 
             String inLine, Outline;
             Outline = int_board.inputParser(null);
-            out.println(Outline);
+            //out.println(Outline);
+            sendMessage(Outline);
             try {
                 while ((inLine = in.readLine())!= null){
                     System.out.println("Client: " + inLine);
                     Outline = int_board.inputParser(inLine);
-                    out.println(Outline);
+                    sendMessage(Outline);
                     if (Outline.equals("DISCONNECT")) {
-                        out.println("Goodbye.");
+                        sendMessage("Goodbye.");
                         int_socket.close();
                     }
                 }
