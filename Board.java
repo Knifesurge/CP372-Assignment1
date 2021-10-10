@@ -244,6 +244,10 @@ public class Board {
 
     public synchronized ArrayList<Note> filterNotes(String color, String contains, String refersTo) {
         ArrayList<Note> fnotes = new ArrayList<Note>();
+        System.out.println("Color: " + color);
+        System.out.println("Contains: " + contains);
+        System.out.println("RefersTo: " + refersTo);
+        
         // Only filter on filters that are present
         boolean fColor = color.isEmpty() ? false : true;
         boolean fContains = contains.isEmpty() ? false : true;
