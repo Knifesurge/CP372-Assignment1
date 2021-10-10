@@ -66,7 +66,7 @@ public class Board {
                 String refersTo = "";
                 if (aArgs.length >= 5 && aArgs[4].contains("refersTo="))
                     refersTo = aArgs[4].substring("refersTo=".length());
-                System.out.println("refersTo=" + refersTo);
+                //System.out.println("refersTo=" + refersTo);
                 ArrayList<Note> notes;
                 if (x == -1 || y == -1)
                     notes = filterNotes(color, "", refersTo);
@@ -74,7 +74,7 @@ public class Board {
                     notes = filterNotes(color, new String(x + " " + y), refersTo);
                 outMsg = "";
                 for (Note n : notes) {
-                    System.out.println("Adding note.." + n.toString());
+                    //System.out.println("Adding note.." + n.toString());
                     outMsg += n.toString();
                     outMsg += "\n";
                 }
@@ -391,8 +391,8 @@ public class Board {
                 && y2 >= 0
                 && w2 >= 0
                 && h2 >= 0
-                && (x1 + w1) < w2
-                && (y1 + h1) < h2;
+                && (x1 + w1) < (x2 + w2)
+                && (y1 + h1) < (y2 + h2);
     }
 
     /**

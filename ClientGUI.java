@@ -12,7 +12,7 @@ import java.util.LinkedList;
  */
 public class ClientGUI extends javax.swing.JFrame {
 
-    private static Client client;
+    private static Client client = null;
     
     /**
      * Creates new form ClientGUI
@@ -20,7 +20,7 @@ public class ClientGUI extends javax.swing.JFrame {
     public ClientGUI() {
         initComponents();
         // Create client object to handle connections
-        client = new Client(clientTerminal);
+        //client = new Client(clientTerminal);
 
         // Initial Command GET, block out some unused textfields
         wTextField.setBackground(Color.GRAY);
@@ -280,6 +280,10 @@ public class ClientGUI extends javax.swing.JFrame {
 
         System.out.println("Attempting connection to " + IPAddress + ":" + portNumber);
 
+        // Create a new Client to handle the connections
+        if (client == null) {
+            client = new Client(clientTerminal);
+        }
         // Attempt a connection if not already established
         if (!client.isConnected()) {
             client.connect(IPAddress, portNumber);
@@ -392,7 +396,7 @@ public class ClientGUI extends javax.swing.JFrame {
 
     private void sendMessageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendMessageButtonActionPerformed
         if (evt.getActionCommand().equals("Send")) {
-            if (client.isConnected()) {
+            if (client != null && client.isConnected()) {
                 String command = (String) commandSelection.getSelectedItem();
                 String[] message = new String[7];
 
@@ -446,6 +450,11 @@ public class ClientGUI extends javax.swing.JFrame {
                         true;
 
                 client.sendMessage(message, argsRequired);
+
+                if (command.equals("DISCONNECT")) {
+                    client.cancel(false);
+                    client = null;
+                }
             } else {
                 clientTerminal.append("SYSTEM: Please connect to a server before sending a message.\n");
             }
