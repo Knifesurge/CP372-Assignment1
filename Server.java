@@ -49,9 +49,10 @@ public class Server {
             String tmp = msg;
             msg = "SERVER>> " + tmp;
             for (BoardRunner br : Server.allClients) {
-                //if (this != br) // Don't send to ourselves
-                System.out.println("Broadcasting:\n" + msg + "\nto:\n" + br.int_socket.getInetAddress().getHostAddress());
+                if (this != br) { // Don't send to ourselves
+                    //System.out.println("Broadcasting:\n" + msg + "\nto:\n" + br.int_socket.getInetAddress().getHostAddress());
                     br.sendMessage(msg);
+                }
             }
         }
 
@@ -98,7 +99,7 @@ public class Server {
                         // Remove ourselves from the server list
                         Server.allClients.remove(this);
                     } else if(Outline.startsWith("Pin") ||  // PIN/UNPIN
-                            Outline.startsWith("note")  ||  // POST
+                            Outline.startsWith("Note")  ||  // POST
                             Outline.startsWith("Board")     // CLEAR/SHAKE
                             ) {
                         broadcastMessage(Outline);
