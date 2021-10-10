@@ -35,7 +35,6 @@ public class Client extends SwingWorker {
         String serverResp = "";  // Messages from server
         try {
             while ((serverResp = input.readLine()) != null) {
-                //if(UserCommand.equals("DISCONNECT")) break;
                 System.out.println(serverResp);
                 textArea.append("Server: " + serverResp + "\n");
             }
@@ -43,6 +42,13 @@ public class Client extends SwingWorker {
             e.printStackTrace();
         }
         return serverResp;
+    }
+
+    @Override
+    protected void done() {
+        try {
+            connected = false;
+        } catch (Exception ignored) {}
     }
 
     public boolean isConnected() { return connected; }
