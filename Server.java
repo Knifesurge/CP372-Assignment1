@@ -47,8 +47,8 @@ public class Server {
 
         private void broadcastMessage(String msg) {
             for (BoardRunner br : Server.allClients) {
-                if (this == br) // Don't send to ourselves
-                    br.sendMessage(msg);
+                //if (this != br) // Don't send to ourselves
+                    br.sendMessage("SERVER>> "+msg);
             }
         }
 
