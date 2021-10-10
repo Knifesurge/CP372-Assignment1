@@ -27,6 +27,7 @@ public class Board {
 
         String outMsg = "ERROR";
         String[] splitArgs = args.split(" ");
+        for (String s : splitArgs) System.out.println(s);
         // Attempt to remove the null values
         ArrayList<String> temp = new ArrayList<String>();
         for (String s : splitArgs)
@@ -247,7 +248,7 @@ public class Board {
         System.out.println("Color: " + color);
         System.out.println("Contains: " + contains);
         System.out.println("RefersTo: " + refersTo);
-        
+
         // Only filter on filters that are present
         boolean fColor = color.isEmpty() ? false : true;
         boolean fContains = contains.isEmpty() ? false : true;
