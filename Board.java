@@ -45,9 +45,8 @@ public class Board {
                 outMsg = "";
                 ArrayList<Pin> pins = new ArrayList<Pin>(getPins());
                 for (Pin p : pins) {
-                    for (Note n : p.getPinnedNotes()){
-                    outMsg += n.toString();
-                    outMsg += "\n";}
+                    outMsg += p.toString()
+                    outMsg += "\n";
                 }
                 if (pins.isEmpty()) {
                     outMsg = "No Pins found.";
