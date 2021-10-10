@@ -285,7 +285,8 @@ public class Board {
                                         .filter(n -> n.getColor().equals(color)
                                         ).collect(Collectors.toList())
                         );
-        if (!fContains && !fRefersTo) return fnotes3;
+                        if (fnotes3.isEmpty()) return fnotes3;
+                        if (!fContains && !fRefersTo) return fnotes3;
         }
         if (fContains){
             String[] containsTmp = contains.split(" ");
@@ -307,6 +308,7 @@ public class Board {
                                         ).collect(Collectors.toList())
                         );
             }
+            if (fnotes2.isEmpty()) return fnotes2;
             if (!fRefersTo) return fnotes2;
         }
         if(fRefersTo){
@@ -336,20 +338,14 @@ public class Board {
             }
             else {
                 fnotes.addAll(
-                    notes.stream()
+                    fnotes2.stream()
                             .filter(n -> n.getMessage().contains(refersTo)
                             ).collect(Collectors.toList())
             );
             }
-        } else if (fRefersTo) {
-            fnotes.addAll(
-                    notes.stream()
-                            .filter(n -> n.getMessage().contains(refersTo)
-                            ).collect(Collectors.toList())
-            );
-        } else {
-            fnotes.addAll(notes);
-        }
+        return fnotes;
+        } 
+        
         return fnotes;
     }
 
