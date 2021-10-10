@@ -97,11 +97,9 @@ public class Server {
                         int_socket.close();
                         // Remove ourselves from the server list
                         Server.allClients.remove(this);
-                    } else if(Outline.startsWith("PIN") ||
-                            Outline.startsWith("UNPIN") ||
-                            Outline.startsWith("POST")  ||
-                            Outline.startsWith("CLEAR") ||
-                            Outline.startsWith("SHAKE")
+                    } else if(Outline.startsWith("Pin") ||  // PIN/UNPIN
+                            Outline.startsWith("note")  ||  // POST
+                            Outline.startsWith("Board")     // CLEAR/SHAKE
                             ) {
                         broadcastMessage(Outline);
                     }
